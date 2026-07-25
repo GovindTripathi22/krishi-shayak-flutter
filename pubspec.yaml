@@ -1,0 +1,53 @@
+name: agrisathi_ai
+description: "AgriSathi AI - AI-Powered Agricultural Assistant for Farmers"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management & DI
+  flutter_riverpod: ^2.4.9
+  get_it: ^7.6.0
+
+  # Routing
+  go_router: ^13.0.0
+
+  # UI & Design System
+  google_fonts: ^6.1.0
+  flutter_svg: ^2.0.9
+  lottie: ^3.0.0
+  intl: ^0.18.1
+
+  # Security & Network
+  flutter_secure_storage: ^9.0.0
+  connectivity_plus: ^5.0.2
+  flutter_dotenv: ^5.1.0
+
+  # Storage & Utilities
+  shared_preferences: ^2.2.2
+  logger: ^2.0.2+1
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
+    - assets/icons/
+    - assets/illustrations/
+    - assets/images/
+    - assets/animations/
+    - assets/lottie/
