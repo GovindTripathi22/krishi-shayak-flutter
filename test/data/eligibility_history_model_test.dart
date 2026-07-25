@@ -1,4 +1,4 @@
-import 'package:agrisathi_ai/data/models/eligibility_history_model.dart';
+import 'package:krishisahayak/data/models/eligibility_history_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,5 +1,5 @@
-import 'package:agrisathi_ai/data/models/government_scheme_model.dart';
-import 'package:agrisathi_ai/domain/entities/scheme_faq.dart';
+import 'package:krishisahayak/data/models/government_scheme_model.dart';
+import 'package:krishisahayak/domain/entities/scheme_faq.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

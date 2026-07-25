@@ -1,4 +1,4 @@
-import 'package:agrisathi_ai/core/services/document/ocr_text_extractor.dart';
+import 'package:krishisahayak/core/services/document/ocr_text_extractor.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

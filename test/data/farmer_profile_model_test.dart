@@ -1,4 +1,4 @@
-import 'package:agrisathi_ai/data/models/farmer_profile_model.dart';
+import 'package:krishisahayak/data/models/farmer_profile_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -101,7 +101,7 @@ class ChatMessagesNotifier extends StateNotifier<ChatState> {
       final initialMsg = ChatMessageEntity(
         id: 'msg_init',
         conversationId: conversationId,
-        text: 'Namaste! I am your AgriSathi AI Agricultural Advisor. Ask me anything about government schemes, subsidies, crop insurance, or farming advice in your language.',
+        text: 'Namaste! I am your KrishiSahayak Agricultural Advisor. Ask me anything about government schemes, subsidies, crop insurance, or farming advice in your language.',
         isUser: false,
         timestamp: DateTime.now(),
       );

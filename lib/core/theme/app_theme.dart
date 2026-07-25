@@ -4,7 +4,7 @@ import '../constants/app_colors.dart';
 import '../constants/app_constants.dart';
 import '../constants/app_typography.dart';
 
-/// AgriSathi AI Material Design 3 Theme Configuration
+/// KrishiSahayak Material Design 3 Theme Configuration
 class AppTheme {
   static ThemeData get lightTheme {
     final colorScheme = const ColorScheme.light(

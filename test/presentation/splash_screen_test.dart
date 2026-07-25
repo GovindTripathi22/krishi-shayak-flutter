@@ -1,4 +1,4 @@
-import 'package:agrisathi_ai/presentation/screens/splash/splash_screen.dart';
+import 'package:krishisahayak/presentation/screens/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +16,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.byIcon(Icons.eco_rounded), findsOneWidget);
-    expect(find.text('AgriSathi AI'), findsOneWidget);
+    expect(find.text('KrishiSahayak'), findsOneWidget);
   });
 }

@@ -261,7 +261,7 @@ class _ChatMessageBubble extends ConsumerWidget {
                   const Icon(Icons.eco_rounded, size: 16.0, color: AppColors.primary),
                   const SizedBox(width: 6.0),
                   Text(
-                    'AgriSathi AI Advisor',
+                    'KrishiSahayak Advisor',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: AppColors.primaryDark,
                       fontWeight: FontWeight.bold,

@@ -17,11 +17,11 @@ class EnvConfig {
 
   static Environment get currentEnvironment => _environment;
 
-  static String get appName => dotenv.get('APP_NAME', fallback: 'AgriSathi AI');
-  static String get apiBaseUrl => dotenv.get('API_BASE_URL', fallback: 'https://api.agrisathi.ai/v1');
-  static String get aiModelEndpoint => dotenv.get('AI_MODEL_ENDPOINT', fallback: 'https://ai.agrisathi.ai/v1/chat');
-  static String get apiKey => dotenv.get('API_KEY', fallback: 'dev_key_agrisathi_2026');
+  static String get appName => dotenv.get('APP_NAME', fallback: 'KrishiSahayak');
+  static String get apiBaseUrl => dotenv.get('API_BASE_URL', fallback: 'https://api.KrishiSahayak.ai/v1');
+  static String get aiModelEndpoint => dotenv.get('AI_MODEL_ENDPOINT', fallback: 'https://ai.KrishiSahayak.ai/v1/chat');
+  static String get apiKey => dotenv.get('API_KEY', fallback: 'dev_key_KrishiSahayak_2026');
   static bool get enableLogging => dotenv.get('ENABLE_LOGGING', fallback: 'true').toLowerCase() == 'true';
   static bool get enableAnalytics => dotenv.get('ENABLE_ANALYTICS', fallback: 'false').toLowerCase() == 'true';
-  static String get firebaseProjectId => dotenv.get('FIREBASE_PROJECT_ID', fallback: 'agrisathi-ai-dev');
+  static String get firebaseProjectId => dotenv.get('FIREBASE_PROJECT_ID', fallback: 'KrishiSahayak-ai-dev');
 }

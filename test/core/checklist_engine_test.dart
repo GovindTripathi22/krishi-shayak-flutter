@@ -1,5 +1,5 @@
-import 'package:agrisathi_ai/core/services/checklist/checklist_engine.dart';
-import 'package:agrisathi_ai/domain/entities/government_scheme_entity.dart';
+import 'package:krishisahayak/core/services/checklist/checklist_engine.dart';
+import 'package:krishisahayak/domain/entities/government_scheme_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,5 +1,5 @@
-import 'package:agrisathi_ai/domain/entities/scheme_filter_params.dart';
-import 'package:agrisathi_ai/domain/entities/scheme_sort_option.dart';
+import 'package:krishisahayak/domain/entities/scheme_filter_params.dart';
+import 'package:krishisahayak/domain/entities/scheme_sort_option.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,5 +1,5 @@
-import 'package:agrisathi_ai/core/localization/app_localizations_delegate.dart';
-import 'package:agrisathi_ai/presentation/screens/onboarding/onboarding_screen.dart';
+import 'package:krishisahayak/core/localization/app_localizations_delegate.dart';
+import 'package:krishisahayak/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +23,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.agriculture_rounded), findsOneWidget);
-    expect(find.text('Welcome to AgriSathi AI'), findsOneWidget);
+    expect(find.text('Welcome to KrishiSahayak'), findsOneWidget);
   });
 }

@@ -19,11 +19,11 @@ void main() async {
   // Initialize Dependency Injection & Services
   await initDependencyInjection();
 
-  AppLogger.info('AgriSathi AI Phase 1 initialized successfully.');
+  AppLogger.info('KrishiSahayak Phase 1 initialized successfully.');
 
   runApp(
     const ProviderScope(
-      child: AgriSathiApp(),
+      child: KrishiSahayakApp(),
     ),
   );
 }

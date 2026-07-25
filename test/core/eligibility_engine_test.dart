@@ -1,7 +1,7 @@
-import 'package:agrisathi_ai/core/services/eligibility/eligibility_engine.dart';
-import 'package:agrisathi_ai/domain/entities/eligibility_input_params.dart';
-import 'package:agrisathi_ai/domain/entities/eligibility_result_entity.dart';
-import 'package:agrisathi_ai/domain/entities/government_scheme_entity.dart';
+import 'package:krishisahayak/core/services/eligibility/eligibility_engine.dart';
+import 'package:krishisahayak/domain/entities/eligibility_input_params.dart';
+import 'package:krishisahayak/domain/entities/eligibility_result_entity.dart';
+import 'package:krishisahayak/domain/entities/government_scheme_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

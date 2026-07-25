@@ -1,0 +1,47 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+.migrate/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Android related
+**/android/app/key.properties
+**/android/app/google-services.json
+**/android/local.properties
+
+# iOS related
+**/ios/Runner/GoogleService-Info.plist
+
+# Secrets and Environment variables
+.env
+.env.*
+*.pem
+*.keystore
+
+# Flutter/Dart related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Symbol specification files
+app.*.symbols
+
+# Multiplexing pubspec files
+pubspec.lock

@@ -1,8 +1,8 @@
 class StringsEn {
   static const Map<String, String> map = {
-    'appName': 'AgriSathi AI',
+    'appName': 'KrishiSahayak',
     'appTagline': 'Your AI Agricultural Assistant',
-    'welcomeTitle': 'Welcome to AgriSathi AI',
+    'welcomeTitle': 'Welcome to KrishiSahayak',
     'welcomeSubtitle': 'Simplifying government schemes and AI assistance for every farmer.',
     'onboarding1Title': 'Discover Government Schemes',
     'onboarding1Desc': 'Find subsidies, crop insurance, and financial support tailored to your farm.',

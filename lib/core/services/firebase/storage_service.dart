@@ -9,7 +9,7 @@ class FirebaseStorageService implements IStorageService {
   @override
   Future<String?> uploadFile(String path, List<int> bytes) async {
     AppLogger.info('StorageService: Uploading file to $path (${bytes.length} bytes)');
-    return 'https://storage.agrisathi.ai/$path';
+    return 'https://storage.KrishiSahayak.ai/$path';
   }
 
   @override

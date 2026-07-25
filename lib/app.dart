@@ -9,8 +9,8 @@ import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
 
-class AgriSathiApp extends ConsumerWidget {
-  const AgriSathiApp({super.key});
+class KrishiSahayakApp extends ConsumerWidget {
+  const KrishiSahayakApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

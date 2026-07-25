@@ -110,7 +110,7 @@ class SettingsScreen extends ConsumerWidget {
                         AppDialog.show(
                           context: context,
                           title: 'Logout',
-                          message: 'Are you sure you want to log out of AgriSathi AI?',
+                          message: 'Are you sure you want to log out of KrishiSahayak?',
                           primaryButtonText: 'Logout',
                           onPrimaryPressed: () async {
                             await ref.read(authControllerProvider.notifier).logout();
@@ -150,7 +150,7 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 24.0),
             Center(
               child: Text(
-                'AgriSathi AI v${AppConstants.appVersion}\nCrafted with ♥ for Indian Farmers',
+                'KrishiSahayak v${AppConstants.appVersion}\nCrafted with ♥ for Indian Farmers',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(color: AppColors.outlineLight),
               ),

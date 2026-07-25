@@ -1,4 +1,4 @@
-import 'package:agrisathi_ai/core/localization/app_localizations.dart';
+import 'package:krishisahayak/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -6,7 +6,7 @@ void main() {
   group('AppLocalizations Tests', () {
     test('English translations match expected keys', () {
       final loc = AppLocalizations(const Locale('en', ''));
-      expect(loc.appName, equals('AgriSathi AI'));
+      expect(loc.appName, equals('KrishiSahayak'));
       expect(loc.getStarted, equals('Get Started'));
       expect(loc.home, equals('Home'));
     });

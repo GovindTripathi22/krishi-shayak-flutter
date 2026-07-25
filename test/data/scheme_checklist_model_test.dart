@@ -1,6 +1,6 @@
-import 'package:agrisathi_ai/data/models/checklist_item_model.dart';
-import 'package:agrisathi_ai/data/models/scheme_checklist_model.dart';
-import 'package:agrisathi_ai/domain/entities/checklist_item_entity.dart';
+import 'package:krishisahayak/data/models/checklist_item_model.dart';
+import 'package:krishisahayak/data/models/scheme_checklist_model.dart';
+import 'package:krishisahayak/domain/entities/checklist_item_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

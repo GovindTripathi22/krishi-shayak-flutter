@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../logger/app_logger.dart';
 
-/// Global Uncaught Exception Handler for AgriSathi AI
+/// Global Uncaught Exception Handler for KrishiSahayak
 class GlobalErrorHandler {
   static void init() {
     // Capture uncaught Flutter framework errors

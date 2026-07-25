@@ -1,5 +1,5 @@
-import 'package:agrisathi_ai/data/models/parsed_document_model.dart';
-import 'package:agrisathi_ai/domain/entities/smart_highlight_entity.dart';
+import 'package:krishisahayak/data/models/parsed_document_model.dart';
+import 'package:krishisahayak/domain/entities/smart_highlight_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

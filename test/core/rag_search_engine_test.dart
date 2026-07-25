@@ -1,9 +1,9 @@
-import 'package:agrisathi_ai/core/services/ai/rag_search_engine.dart';
-import 'package:agrisathi_ai/domain/entities/farmer_profile_entity.dart';
-import 'package:agrisathi_ai/domain/entities/government_scheme_entity.dart';
-import 'package:agrisathi_ai/domain/entities/scheme_filter_params.dart';
-import 'package:agrisathi_ai/domain/entities/scheme_sort_option.dart';
-import 'package:agrisathi_ai/domain/repositories/government_scheme_repository.dart';
+import 'package:krishisahayak/core/services/ai/rag_search_engine.dart';
+import 'package:krishisahayak/domain/entities/farmer_profile_entity.dart';
+import 'package:krishisahayak/domain/entities/government_scheme_entity.dart';
+import 'package:krishisahayak/domain/entities/scheme_filter_params.dart';
+import 'package:krishisahayak/domain/entities/scheme_sort_option.dart';
+import 'package:krishisahayak/domain/repositories/government_scheme_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class FakeSchemeRepository implements GovernmentSchemeRepository {

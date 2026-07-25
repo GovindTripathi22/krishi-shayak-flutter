@@ -1,4 +1,4 @@
-/// Base Exception class for AgriSathi AI
+/// Base Exception class for KrishiSahayak
 abstract class AppException implements Exception {
   final String message;
   final String? code;

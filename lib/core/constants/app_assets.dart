@@ -1,4 +1,4 @@
-/// Centralized asset management for AgriSathi AI
+/// Centralized asset management for KrishiSahayak
 abstract class AppAssets {
   static const String _iconsPath = 'assets/icons';
   static const String _illustrationsPath = 'assets/illustrations';

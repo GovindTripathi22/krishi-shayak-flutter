@@ -213,7 +213,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Legal Footer
               Center(
                 child: Text(
-                  'By logging in, you agree to AgriSathi AI\'s\nTerms of Service & Privacy Policy',
+                  'By logging in, you agree to KrishiSahayak\'s\nTerms of Service & Privacy Policy',
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodySmall?.copyWith(color: AppColors.outlineLight),
                 ),

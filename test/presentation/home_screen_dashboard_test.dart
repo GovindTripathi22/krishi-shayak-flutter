@@ -1,5 +1,5 @@
-import 'package:agrisathi_ai/core/localization/app_localizations_delegate.dart';
-import 'package:agrisathi_ai/presentation/screens/home/home_screen.dart';
+import 'package:krishisahayak/core/localization/app_localizations_delegate.dart';
+import 'package:krishisahayak/presentation/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
@@ -30,15 +31,30 @@ class SchemeDetailsScreen extends ConsumerWidget {
   });
 
   void _openOfficialPortal(BuildContext context, String url, String portalTitle) {
+    // HTTPS Validation
+    final Uri? targetUri = Uri.tryParse(url);
+    if (targetUri == null || !targetUri.isScheme('HTTPS') && !targetUri.isScheme('HTTP')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid government portal URL')),
+      );
+      return;
+    }
+
     AppDialog.show(
       context: context,
       title: 'Redirecting to Official Portal',
-      message: 'You are leaving AgriSathi AI and being directed to the official government website:\n\n$url\n\nEnsure you submit your application only on verified .gov.in portals.',
+      message: 'You are leaving KrishiSahayak and being directed to the official government website:\n\n$url\n\nEnsure you submit your application only on verified .gov.in portals.',
       primaryButtonText: 'Proceed to Official Site',
-      onPrimaryPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Opening official government portal: $url')),
-        );
+      onPrimaryPressed: () async {
+        if (await canLaunchUrl(targetUri)) {
+          await launchUrl(targetUri, mode: LaunchMode.externalApplication);
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Opening portal URL: $url')),
+            );
+          }
+        }
       },
       secondaryButtonText: 'Cancel',
     );

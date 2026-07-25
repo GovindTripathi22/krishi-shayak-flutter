@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KrishiSahayak (AgriSathi AI) — Live App Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-container: #C8E6C9;
+      --primary-dark: #1B5E20;
+      --secondary: #FFFFFF;
+      --accent: #FFC107;
+      --accent-dark: #F57F17;
+      --bg: #F8F9FA;
+      --surface: #FFFFFF;
+      --text: #1C1B1F;
+      --text-muted: #757575;
+      --card-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+    body { background-color: #121814; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+
+    /* Smartphone Frame */
+    .phone-container {
+      width: 410px;
+      height: 840px;
+      background: var(--bg);
+      border-radius: 44px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 0 0 12px #2A2E2B;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Top Notch / Status Bar */
+    .status-bar {
+      height: 36px;
+      background: var(--primary-dark);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 10;
+    }
+
+    /* App Header */
+    .app-header {
+      background: var(--surface);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .user-profile { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 42px; height: 42px; background: var(--primary-container); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 700; }
+    .greeting h4 { font-size: 15px; color: var(--text); font-weight: 700; }
+    .greeting p { font-size: 11px; color: var(--text-muted); }
+
+    /* Views */
+    .view-content { flex: 1; overflow-y: auto; padding: 16px; display: none; }
+    .view-content.active { display: block; }
+
+    /* Card Utilities */
+    .card { background: var(--surface); border-radius: 20px; padding: 16px; margin-bottom: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(0,0,0,0.03); }
+
+    /* Weather Card */
+    .weather-card { background: linear-gradient(135deg, #2E7D32, #1B5E20); color: white; border-radius: 24px; padding: 20px; }
+    .weather-header { display: flex; justify-content: space-between; align-items: center; }
+    .weather-temp { font-size: 42px; font-weight: 700; margin: 10px 0; }
+    .weather-metrics { display: flex; gap: 16px; font-size: 12px; opacity: 0.9; }
+
+    /* Quick Action Grid */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .grid-btn { background: #E8F5E9; border-radius: 18px; padding: 14px 8px; text-align: center; cursor: pointer; transition: transform 0.2s; }
+    .grid-btn:active { transform: scale(0.95); }
+    .grid-btn span { font-size: 26px; color: var(--primary); display: block; margin-bottom: 6px; }
+    .grid-btn p { font-size: 11px; font-weight: 600; color: var(--text); }
+
+    /* Chat Bubbles */
+    .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; }
+    .chat-user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; margin-left: auto; }
+    .chat-ai { background: white; color: var(--text); border-bottom-left-radius: 4px; box-shadow: var(--card-shadow); }
+
+    /* Bottom Navigation */
+    .nav-bar { height: 68px; background: var(--surface); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #EEEEEE; }
+    .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; flex: 1; padding: 8px 0; }
+    .nav-item.active { color: var(--primary); font-weight: 700; }
+    .nav-item span { font-size: 24px; display: block; }
+    .nav-item p { font-size: 10px; margin-top: 2px; }
+
+    .tag { display: inline-block; padding: 4px 10px; background: var(--primary-container); color: var(--primary-dark); border-radius: 12px; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+    .btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>09:41</span>
+      <span>🌾 KrishiSahayak</span>
+      <span>5G ⚡</span>
+    </div>
+
+    <!-- App Header -->
+    <div class="app-header">
+      <div class="user-profile">
+        <div class="avatar">R</div>
+        <div class="greeting">
+          <h4>Good Morning, Ramesh 👋</h4>
+          <p>Nashik, Maharashtra • Cotton & Wheat</p>
+        </div>
+      </div>
+      <span class="material-icons-round" style="color:var(--primary); font-size: 26px;">notifications</span>
+    </div>
+
+    <!-- VIEW 1: HOME DASHBOARD -->
+    <div id="view-home" class="view-content active">
+      <!-- Weather Card -->
+      <div class="weather-card">
+        <div class="weather-header">
+          <span style="font-size: 13px; font-weight: 600;">📍 Nashik, MH</span>
+          <span class="tag" style="background:rgba(255,255,255,0.2); color:white;">Live Advisory</span>
+        </div>
+        <div class="weather-temp">29°C</div>
+        <p style="font-size: 13px; margin-bottom: 12px; opacity: 0.9;">Partly Sunny • Ideal for Drip Irrigation</p>
+        <div class="weather-metrics">
+          <span>💧 62% Humidity</span>
+          <span>💨 14 km/h Wind</span>
+          <span>🌧️ 15% Rain</span>
+        </div>
+      </div>
+
+      <h4 style="margin: 16px 0 10px; font-size: 14px;">Quick Actions (2-Tap Navigation)</h4>
+      <div class="grid">
+        <div class="grid-btn" onclick="switchView('ai-chat')">
+          <span class="material-icons-round">smart_toy</span>
+          <p>AI Chat</p>
+        </div>
+        <div class="grid-btn" onclick="switchView('eligibility')">
+          <span class="material-icons-round">fact_check</span>
+          <p>Eligibility</p>
+        </div>
+        <div class="grid-btn" onclick="switchView('schemes')">
+          <span class="material-icons-round">workspace_premium</span>
+          <p>Schemes</p>
+        </div>
+        <div class="grid-btn" onclick="switchView('docs')">
+          <span class="material-icons-round">picture_as_pdf</span>
+          <p>Upload PDF</p>
+        </div>
+        <div class="grid-btn" onclick="switchView('checklist')">
+          <span class="material-icons-round">checklist</span>
+          <p>Checklist</p>
+        </div>
+        <div class="grid-btn">
+          <span class="material-icons-round">mic</span>
+          <p>Voice AI</p>
+        </div>
+      </div>
+
+      <h4 style="margin-bottom: 10px; font-size: 14px;">Recommended For Your Farm</h4>
+      <div class="card">
+        <span class="tag">⭐ High Match (98%)</span>
+        <h4 style="font-size: 15px; font-weight: 700;">PM-KISAN Samman Nidhi</h4>
+        <p style="font-size: 12px; color: var(--primary); font-weight: 700; margin: 4px 0 8px;">₹6,000 / year Direct Income Support</p>
+        <p style="font-size: 11px; color: var(--text-muted);">Direct cash transfer in 3 equal installments to eligible landholding farmer families.</p>
+        <button class="btn-primary" onclick="switchView('eligibility')">Check Eligibility & Apply</button>
+      </div>
+    </div>
+
+    <!-- VIEW 2: AI CHATBOT -->
+    <div id="view-ai-chat" class="view-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h4 style="font-size:16px;">🌾 AgriSathi AI Advisor</h4>
+        <span class="tag">Gemini RAG + 7 Languages</span>
+      </div>
+
+      <div class="chat-bubble chat-ai">
+        Namaste Ramesh! I am your AI Agricultural Assistant. How can I help your farm today?
+      </div>
+      <div class="chat-bubble chat-user">
+        Am I eligible for PM-KISAN subsidy for my 3 acres cotton farm in Maharashtra?
+      </div>
+      <div class="chat-bubble chat-ai">
+        🌾 <strong>Yes, Ramesh! Based on your profile:</strong><br><br>
+        ✅ <strong>Status</strong>: Eligible (98% Match)<br>
+        💰 <strong>Benefit</strong>: ₹6,000 per year via DBT<br>
+        📋 <strong>Required Documents</strong>: Aadhaar Card, 7/12 Land Extract, Bank Passbook.<br>
+        🔗 <strong>Official Portal</strong>: pmkisan.gov.in
+      </div>
+
+      <div style="margin-top:20px; display:flex; gap:8px;">
+        <input type="text" placeholder="Ask in Hindi, Marathi, English..." style="flex:1; padding:12px; border-radius:14px; border:1px solid #DDD; font-size:12px;">
+        <button class="btn-primary" style="width:auto; padding:12px 16px; margin:0;">Send</button>
+      </div>
+    </div>
+
+    <!-- VIEW 3: ELIGIBILITY CHECKER -->
+    <div id="view-eligibility" class="view-content">
+      <h4 style="font-size:16px; margin-bottom:6px;">AI Scheme Eligibility Engine</h4>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Evaluated against 150+ central & state scheme rules</p>
+
+      <div class="card" style="background:#E8F5E9; border-color:#C8E6C9;">
+        <h3 style="color:var(--primary-dark); font-size:18px;">You Qualify for 4 Subsidies!</h3>
+        <p style="font-size:12px; margin-top:4px;">Total potential benefit: <strong>₹51,000 / year</strong></p>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h4 style="font-size:14px;">PM-KISAN SAMMAN NIDHI</h4>
+          <span class="tag">98% Match</span>
+        </div>
+        <p style="font-size:11px; color:var(--primary); font-weight:700;">Why You Qualify:</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">• Own cultivable land under 5 acres in Maharashtra.<br>• Active Aadhaar-linked bank account detected.</p>
+        <button class="btn-primary" onclick="switchView('checklist')">View Required Checklist</button>
+      </div>
+    </div>
+
+    <!-- VIEW 4: SCHEMES -->
+    <div id="view-schemes" class="view-content">
+      <h4 style="font-size:16px; margin-bottom:12px;">Government Schemes Repository</h4>
+      <div class="card">
+        <span class="tag">Central Scheme</span>
+        <h4>PM Fasal Bima Yojana (PMFBY)</h4>
+        <p style="font-size:12px; color:var(--primary); font-weight:700;">Crop Insurance for Kharif Season</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Deadline: 31st July 2026</p>
+      </div>
+      <div class="card">
+        <span class="tag">State Scheme • Maharashtra</span>
+        <h4>PMKSY Drip Irrigation Subsidy</h4>
+        <p style="font-size:12px; color:var(--primary); font-weight:700;">Up to 80% Subsidy (₹45,000)</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Deadline: 31st August 2026</p>
+      </div>
+    </div>
+
+    <!-- VIEW 5: DOCS / PDF EXPLAINER -->
+    <div id="view-docs" class="view-content">
+      <h4 style="font-size:16px; margin-bottom:6px;">AI Document Intelligence</h4>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Upload PDFs or photos of government circulars</p>
+
+      <div class="card" style="border: 2px dashed #C8E6C9; text-align:center; padding:24px;">
+        <span class="material-icons-round" style="font-size:40px; color:var(--primary);">cloud_upload</span>
+        <h4 style="font-size:14px; margin-top:8px;">Upload Circular PDF or Scan Brochure</h4>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">OCR & Gemini AI will extract benefits & deadlines</p>
+      </div>
+    </div>
+
+    <!-- VIEW 6: CHECKLIST -->
+    <div id="view-checklist" class="view-content">
+      <h4 style="font-size:16px; margin-bottom:6px;">Document Checklist Generator</h4>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">PM-KISAN Samman Nidhi Required Documents</p>
+
+      <div class="card" style="background:#FFF8E1;">
+        <h4 style="font-size:15px; color:#F57F17;">Document Preparedness: 75%</h4>
+        <p style="font-size:11px; margin-top:4px;">3 of 4 documents ready before application.</p>
+      </div>
+
+      <div class="card">
+        <p style="font-size:13px; font-weight:700;">✅ Aadhaar Card (Linked with Bank)</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">AI Explanation: Verifies identity for Direct Benefit Transfer.</p>
+      </div>
+      <div class="card">
+        <p style="font-size:13px; font-weight:700;">✅ 7/12 Land Extract Certificate</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">AI Explanation: Confirms official agricultural land ownership.</p>
+      </div>
+      <div class="card" style="border-left:4px solid #D32F2F;">
+        <p style="font-size:13px; font-weight:700; color:#D32F2F;">⚠️ Crop Sowing Certificate (Pending)</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Obtain from your local Talathi / Gram Panchayat office.</p>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="nav-bar">
+      <div class="nav-item active" onclick="switchView('home', this)">
+        <span class="material-icons-round">home</span>
+        <p>Home</p>
+      </div>
+      <div class="nav-item" onclick="switchView('schemes', this)">
+        <span class="material-icons-round">workspace_premium</span>
+        <p>Schemes</p>
+      </div>
+      <div class="nav-item" onclick="switchView('ai-chat', this)">
+        <span class="material-icons-round">smart_toy</span>
+        <p>AI Chat</p>
+      </div>
+      <div class="nav-item" onclick="switchView('eligibility', this)">
+        <span class="material-icons-round">fact_check</span>
+        <p>Eligibility</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchView(viewId, element) {
+      document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-' + viewId).classList.add('active');
+
+      if (element) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>

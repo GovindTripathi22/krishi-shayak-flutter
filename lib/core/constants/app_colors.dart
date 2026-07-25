@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// AgriSathi AI Design System Color Palette (Material Design 3)
+/// KrishiSahayak Design System Color Palette (Material Design 3)
 abstract class AppColors {
   // Primary - Nature Green
   static const Color primary = Color(0xFF2E7D32);

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
-/// Reusable Logger Utility for AgriSathi AI
+/// Reusable Logger Utility for KrishiSahayak
 class AppLogger {
   static final Logger _logger = Logger(
     printer: PrettyPrinter(

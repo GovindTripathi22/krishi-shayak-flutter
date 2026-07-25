@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Global Application Constants
 abstract class AppConstants {
-  static const String appName = 'AgriSathi AI';
+  static const String appName = 'KrishiSahayak';
   static const String appTagline = 'Your AI Agricultural Assistant';
   static const String appVersion = '1.0.0';
 
