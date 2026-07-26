@@ -4,10 +4,10 @@ import '../../logger/app_logger.dart';
 
 /// Client service connecting KrishiSahayak Flutter Mobile App to Python FastAPI Backend
 class PythonBackendService {
-  // Base URL for Python FastAPI server (http://10.0.2.2:8000 for Android Emulator, http://localhost:8000 for Web/Desktop)
+  // Live Public HTTPS Tunnel URL for Cloudflare / Localtunnel
   final String baseUrl;
 
-  PythonBackendService({this.baseUrl = 'http://10.0.2.2:8000'});
+  PythonBackendService({this.baseUrl = 'https://famous-pandas-cheer.loca.lt'});
 
   /// Send AI Chatbot RAG request to Python FastAPI `/api/chat`
   Future<Map<String, dynamic>> sendChatPrompt({
@@ -22,7 +22,10 @@ class PythonBackendService {
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Remainder': 'true',
+        },
         body: jsonEncode({
           'farmer_id': 'farmer_101',
           'prompt': prompt,
@@ -64,7 +67,10 @@ class PythonBackendService {
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Remainder': 'true',
+        },
         body: jsonEncode({
           'state': state,
           'district': district,
