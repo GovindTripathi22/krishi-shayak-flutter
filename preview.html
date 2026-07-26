@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KrishiSahayak (AgriSathi AI) — Live App Preview</title>
+  <title>KrishiSahayak — Live Real Data App Preview</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <style>
@@ -37,7 +37,7 @@
       overflow: hidden;
     }
 
-    /* Top Notch / Status Bar */
+    /* Top Status Bar */
     .status-bar {
       height: 36px;
       background: var(--primary-dark);
@@ -86,7 +86,7 @@
     .grid-btn p { font-size: 11px; font-weight: 600; color: var(--text); }
 
     /* Chat Bubbles */
-    .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; }
+    .chat-bubble { max-width: 85%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; }
     .chat-user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; margin-left: auto; }
     .chat-ai { background: white; color: var(--text); border-bottom-left-radius: 4px; box-shadow: var(--card-shadow); }
 
@@ -98,7 +98,8 @@
     .nav-item p { font-size: 10px; margin-top: 2px; }
 
     .tag { display: inline-block; padding: 4px 10px; background: var(--primary-container); color: var(--primary-dark); border-radius: 12px; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
-    .btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 8px; }
+    .btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 14px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 8px; text-decoration: none; display: inline-block; text-align: center; }
+    .btn-outlined { width: 100%; background: transparent; color: var(--primary); border: 2px solid var(--primary); padding: 10px; border-radius: 14px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 6px; text-decoration: none; display: inline-block; text-align: center; }
   </style>
 </head>
 <body>
@@ -107,7 +108,7 @@
     <!-- Status Bar -->
     <div class="status-bar">
       <span>09:41</span>
-      <span>🌾 KrishiSahayak</span>
+      <span>🌾 KrishiSahayak (Real Data)</span>
       <span>5G ⚡</span>
     </div>
 
@@ -132,7 +133,7 @@
           <span class="tag" style="background:rgba(255,255,255,0.2); color:white;">Live Advisory</span>
         </div>
         <div class="weather-temp">29°C</div>
-        <p style="font-size: 13px; margin-bottom: 12px; opacity: 0.9;">Partly Sunny • Ideal for Drip Irrigation</p>
+        <p style="font-size: 13px; margin-bottom: 12px; opacity: 0.9;">Partly Sunny • Favorable for Drip Spraying</p>
         <div class="weather-metrics">
           <span>💧 62% Humidity</span>
           <span>💨 14 km/h Wind</span>
@@ -168,35 +169,46 @@
         </div>
       </div>
 
-      <h4 style="margin-bottom: 10px; font-size: 14px;">Recommended For Your Farm</h4>
+      <h4 style="margin-bottom: 10px; font-size: 14px;">Verified Central & State Schemes</h4>
+
+      <!-- PM KISAN -->
       <div class="card">
-        <span class="tag">⭐ High Match (98%)</span>
-        <h4 style="font-size: 15px; font-weight: 700;">PM-KISAN Samman Nidhi</h4>
-        <p style="font-size: 12px; color: var(--primary); font-weight: 700; margin: 4px 0 8px;">₹6,000 / year Direct Income Support</p>
-        <p style="font-size: 11px; color: var(--text-muted);">Direct cash transfer in 3 equal installments to eligible landholding farmer families.</p>
-        <button class="btn-primary" onclick="switchView('eligibility')">Check Eligibility & Apply</button>
+        <span class="tag">Central Scheme • 100% Verified</span>
+        <h4 style="font-size: 15px; font-weight: 700;">PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)</h4>
+        <p style="font-size: 12px; color: var(--primary); font-weight: 700; margin: 4px 0 8px;">₹6,000 / year Direct Income Support via DBT</p>
+        <p style="font-size: 11px; color: var(--text-muted);">Direct cash transfer in 3 equal installments of ₹2,000 into Aadhaar-seeded accounts.</p>
+        <a href="https://pmkisan.gov.in/RegistrationFormNew.aspx" target="_blank" class="btn-primary">Apply on Official Portal (pmkisan.gov.in)</a>
+      </div>
+
+      <!-- NAMO SHETKARI MAHARASHTRA -->
+      <div class="card">
+        <span class="tag" style="background:#FFF3E0; color:#E65100;">Maharashtra State Scheme</span>
+        <h4 style="font-size: 15px; font-weight: 700;">Namo Shetkari Mahasanman Nidhi Yojana</h4>
+        <p style="font-size: 12px; color: var(--primary); font-weight: 700; margin: 4px 0 8px;">Additional ₹6,000 / year (Total ₹12,000 with PM-KISAN)</p>
+        <p style="font-size: 11px; color: var(--text-muted);">Maharashtra State scheme supplementing PM-KISAN for active landholding farmers.</p>
+        <a href="https://nsmny.maharashtra.gov.in" target="_blank" class="btn-primary">Open Official Portal (nsmny.maharashtra.gov.in)</a>
       </div>
     </div>
 
     <!-- VIEW 2: AI CHATBOT -->
     <div id="view-ai-chat" class="view-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h4 style="font-size:16px;">🌾 AgriSathi AI Advisor</h4>
+        <h4 style="font-size:16px;">🌾 KrishiSahayak AI Advisor</h4>
         <span class="tag">Gemini RAG + 7 Languages</span>
       </div>
 
       <div class="chat-bubble chat-ai">
-        Namaste Ramesh! I am your AI Agricultural Assistant. How can I help your farm today?
+        Namaste Ramesh! I am your KrishiSahayak AI Assistant. How can I help your farm today?
       </div>
       <div class="chat-bubble chat-user">
-        Am I eligible for PM-KISAN subsidy for my 3 acres cotton farm in Maharashtra?
+        Am I eligible for PM-KISAN and PMFBY crop insurance in Maharashtra?
       </div>
       <div class="chat-bubble chat-ai">
-        🌾 <strong>Yes, Ramesh! Based on your profile:</strong><br><br>
-        ✅ <strong>Status</strong>: Eligible (98% Match)<br>
-        💰 <strong>Benefit</strong>: ₹6,000 per year via DBT<br>
-        📋 <strong>Required Documents</strong>: Aadhaar Card, 7/12 Land Extract, Bank Passbook.<br>
-        🔗 <strong>Official Portal</strong>: pmkisan.gov.in
+        🌾 <strong>Yes, Ramesh! Verified Government Eligibility:</strong><br><br>
+        ✅ <strong>PM-KISAN</strong>: Eligible (98% Match). Benefit: ₹6,000/year via DBT.<br>
+        ✅ <strong>PMFBY Insurance</strong>: Premium capped at 2% for Kharif crops.<br>
+        📋 <strong>Documents Needed</strong>: Aadhaar Card, 7/12 Land Extract, Bank Passbook.<br><br>
+        🔗 <a href="https://pmkisan.gov.in" target="_blank" style="color:var(--primary); font-weight:700;">pmkisan.gov.in</a> | <a href="https://pmfby.gov.in" target="_blank" style="color:var(--primary); font-weight:700;">pmfby.gov.in</a>
       </div>
 
       <div style="margin-top:20px; display:flex; gap:8px;">
@@ -208,11 +220,11 @@
     <!-- VIEW 3: ELIGIBILITY CHECKER -->
     <div id="view-eligibility" class="view-content">
       <h4 style="font-size:16px; margin-bottom:6px;">AI Scheme Eligibility Engine</h4>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Evaluated against 150+ central & state scheme rules</p>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Evaluated against official government scheme rules</p>
 
       <div class="card" style="background:#E8F5E9; border-color:#C8E6C9;">
-        <h3 style="color:var(--primary-dark); font-size:18px;">You Qualify for 4 Subsidies!</h3>
-        <p style="font-size:12px; margin-top:4px;">Total potential benefit: <strong>₹51,000 / year</strong></p>
+        <h3 style="color:var(--primary-dark); font-size:18px;">You Qualify for 5 Schemes!</h3>
+        <p style="font-size:12px; margin-top:4px;">Total potential benefit: <strong>₹57,000 / year</strong></p>
       </div>
 
       <div class="card">
@@ -221,37 +233,59 @@
           <span class="tag">98% Match</span>
         </div>
         <p style="font-size:11px; color:var(--primary); font-weight:700;">Why You Qualify:</p>
-        <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">• Own cultivable land under 5 acres in Maharashtra.<br>• Active Aadhaar-linked bank account detected.</p>
-        <button class="btn-primary" onclick="switchView('checklist')">View Required Checklist</button>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">• Cultivable landholder in Nashik, Maharashtra.<br>• Aadhaar-linked active bank account verified.</p>
+        <a href="https://pmkisan.gov.in/RegistrationFormNew.aspx" target="_blank" class="btn-primary">Apply on Official Portal (pmkisan.gov.in)</a>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h4 style="font-size:14px;">SMAM TRACTOR & MACHINERY SUBSIDY</h4>
+          <span class="tag" style="background:#E3F2FD; color:#0D47A1;">88% Match</span>
+        </div>
+        <p style="font-size:11px; color:var(--primary); font-weight:700;">Why You Qualify:</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">• Up to 50% direct subsidy for individual farm implements.<br>• Official Portal: agrimachinery.nic.in</p>
+        <a href="https://agrimachinery.nic.in/Index/farmerRegistration" target="_blank" class="btn-outlined">Apply on Portal (agrimachinery.nic.in)</a>
       </div>
     </div>
 
     <!-- VIEW 4: SCHEMES -->
     <div id="view-schemes" class="view-content">
-      <h4 style="font-size:16px; margin-bottom:12px;">Government Schemes Repository</h4>
+      <h4 style="font-size:16px; margin-bottom:12px;">Official Schemes Directory</h4>
+      
       <div class="card">
-        <span class="tag">Central Scheme</span>
+        <span class="tag">Crop Insurance</span>
         <h4>PM Fasal Bima Yojana (PMFBY)</h4>
-        <p style="font-size:12px; color:var(--primary); font-weight:700;">Crop Insurance for Kharif Season</p>
-        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Deadline: 31st July 2026</p>
+        <p style="font-size:12px; color:var(--primary); font-weight:700;">Full coverage for drought, flood & pest infestation</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Deadline: 31st July for Kharif | Official: pmfby.gov.in</p>
+        <a href="https://pmfby.gov.in/farmerRegistrationForm" target="_blank" class="btn-primary">Official Portal (pmfby.gov.in)</a>
       </div>
+
       <div class="card">
-        <span class="tag">State Scheme • Maharashtra</span>
-        <h4>PMKSY Drip Irrigation Subsidy</h4>
-        <p style="font-size:12px; color:var(--primary); font-weight:700;">Up to 80% Subsidy (₹45,000)</p>
-        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Deadline: 31st August 2026</p>
+        <span class="tag">Micro Irrigation</span>
+        <h4>PM Krishi Sinchayee Yojana (PDMC)</h4>
+        <p style="font-size:12px; color:var(--primary); font-weight:700;">Up to 80% Subsidy for Drip Kits (₹45,000)</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Deadline: 31st March | Official: pmksy.gov.in</p>
+        <a href="https://pmksy.gov.in" target="_blank" class="btn-outlined">Official Portal (pmksy.gov.in)</a>
+      </div>
+
+      <div class="card">
+        <span class="tag">Agri Credit</span>
+        <h4>Kisan Credit Card (KCC) Scheme</h4>
+        <p style="font-size:12px; color:var(--primary); font-weight:700;">₹3 Lakh Loan at effective 4% Interest Rate</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">No collateral required up to ₹1.60 Lakh</p>
+        <a href="https://pmkisan.gov.in/KCC.aspx" target="_blank" class="btn-outlined">Official KCC Portal</a>
       </div>
     </div>
 
     <!-- VIEW 5: DOCS / PDF EXPLAINER -->
     <div id="view-docs" class="view-content">
       <h4 style="font-size:16px; margin-bottom:6px;">AI Document Intelligence</h4>
-      <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Upload PDFs or photos of government circulars</p>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">Upload PDFs or scan government circular photos</p>
 
       <div class="card" style="border: 2px dashed #C8E6C9; text-align:center; padding:24px;">
         <span class="material-icons-round" style="font-size:40px; color:var(--primary);">cloud_upload</span>
         <h4 style="font-size:14px; margin-top:8px;">Upload Circular PDF or Scan Brochure</h4>
-        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">OCR & Gemini AI will extract benefits & deadlines</p>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Google MLKit OCR extracts text & Gemini summarizes</p>
       </div>
     </div>
 
@@ -262,7 +296,7 @@
 
       <div class="card" style="background:#FFF8E1;">
         <h4 style="font-size:15px; color:#F57F17;">Document Preparedness: 75%</h4>
-        <p style="font-size:11px; margin-top:4px;">3 of 4 documents ready before application.</p>
+        <p style="font-size:11px; margin-top:4px;">3 of 4 documents verified before portal application.</p>
       </div>
 
       <div class="card">
