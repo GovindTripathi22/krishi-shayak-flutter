@@ -33,8 +33,8 @@ class AuthRepositoryImpl implements AuthRepository {
         return UserEntity(
           id: res['user']['id'] ?? 'user_1',
           phoneNumber: phoneNumber,
-          isVerified: true,
-          createdAt: DateTime.now(),
+          preferredLanguage: 'en',
+          isLoggedIn: true,
         );
       }
       return null;
@@ -61,9 +61,9 @@ class AuthRepositoryImpl implements AuthRepository {
         return UserEntity(
           id: res['user']['id'] ?? 'user_google',
           phoneNumber: '+919876543210',
-          email: 'farmer@gmail.com',
-          isVerified: true,
-          createdAt: DateTime.now(),
+          name: 'Farmer Friend',
+          preferredLanguage: 'en',
+          isLoggedIn: true,
         );
       }
       return null;
@@ -75,11 +75,11 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserEntity?> signInAsGuest() async {
     _isGuest = true;
-    return UserEntity(
+    return const UserEntity(
       id: 'guest_user',
       phoneNumber: '',
-      isVerified: false,
-      createdAt: DateTime.now(),
+      preferredLanguage: 'en',
+      isLoggedIn: false,
     );
   }
 
@@ -91,8 +91,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return UserEntity(
         id: userId,
         phoneNumber: '+919876543210',
-        isVerified: true,
-        createdAt: DateTime.now(),
+        preferredLanguage: 'en',
+        isLoggedIn: true,
       );
     }
     return null;
