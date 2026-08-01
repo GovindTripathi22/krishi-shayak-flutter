@@ -1,31 +1,31 @@
 import 'package:get_it/get_it.dart';
 
-import '../data/datasources/auth_remote_datasource.dart';
-import '../data/datasources/scheme_local_datasource.dart';
-import '../data/datasources/scheme_remote_datasource.dart';
-import '../data/repositories/auth_repository_impl.dart';
-import '../data/repositories/bookmark_repository_impl.dart';
-import '../data/repositories/category_repository_impl.dart';
-import '../data/repositories/chat_repository_impl.dart';
-import '../data/repositories/checklist_repository_impl.dart';
-import '../data/repositories/document_repository_impl.dart';
-import '../data/repositories/eligibility_repository_impl.dart';
-import '../data/repositories/government_scheme_repository_impl.dart';
-import '../data/repositories/search_repository_impl.dart';
-import '../data/repositories/recommendation_repository_impl.dart';
-import '../data/repositories/user_repository_impl.dart';
+import '../../data/datasources/auth_remote_datasource.dart';
+import '../../data/datasources/scheme_local_datasource.dart';
+import '../../data/datasources/scheme_remote_datasource.dart';
+import '../../data/repositories/auth_repository_impl.dart';
+import '../../data/repositories/bookmark_repository_impl.dart';
+import '../../data/repositories/category_repository_impl.dart';
+import '../../data/repositories/chat_repository_impl.dart';
+import '../../data/repositories/checklist_repository_impl.dart';
+import '../../data/repositories/document_repository_impl.dart';
+import '../../data/repositories/eligibility_repository_impl.dart';
+import '../../data/repositories/government_scheme_repository_impl.dart';
+import '../../data/repositories/search_repository_impl.dart';
+import '../../data/repositories/recommendation_repository_impl.dart';
+import '../../data/repositories/user_repository_impl.dart';
 
-import '../domain/repositories/auth_repository.dart';
-import '../domain/repositories/bookmark_repository.dart';
-import '../domain/repositories/category_repository.dart';
-import '../domain/repositories/chat_repository.dart';
-import '../domain/repositories/checklist_repository.dart';
-import '../domain/repositories/document_repository.dart';
-import '../domain/repositories/eligibility_repository.dart';
-import '../domain/repositories/government_scheme_repository.dart';
-import '../domain/repositories/search_repository.dart';
-import '../domain/repositories/recommendation_repository.dart';
-import '../domain/repositories/user_repository.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/bookmark_repository.dart';
+import '../../domain/repositories/category_repository.dart';
+import '../../domain/repositories/chat_repository.dart';
+import '../../domain/repositories/checklist_repository.dart';
+import '../../domain/repositories/document_repository.dart';
+import '../../domain/repositories/eligibility_repository.dart';
+import '../../domain/repositories/government_scheme_repository.dart';
+import '../../domain/repositories/search_repository.dart';
+import '../../domain/repositories/recommendation_repository.dart';
+import '../../domain/repositories/user_repository.dart';
 
 import '../services/firebase/analytics_service.dart';
 import '../services/firebase/auth_service.dart';
@@ -50,7 +50,6 @@ Future<void> initDependencyInjection() async {
   sl.registerLazySingleton<ICrashlyticsService>(() => FirebaseCrashlyticsService());
   sl.registerLazySingleton<IStorageService>(() => FirebaseStorageService());
 
-
   // Data Sources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl());
   sl.registerLazySingleton<SchemeRemoteDataSource>(() => SchemeRemoteDataSourceImpl());
@@ -67,21 +66,14 @@ Future<void> initDependencyInjection() async {
       ));
 
   sl.registerLazySingleton<BookmarkRepository>(() => BookmarkRepositoryImpl());
-
   sl.registerLazySingleton<CategoryRepository>(() => CategoryRepositoryImpl());
-
   sl.registerLazySingleton<SearchRepository>(() => SearchRepositoryImpl(
         schemeRepository: sl(),
       ));
 
   sl.registerLazySingleton<RecommendationRepository>(() => RecommendationRepositoryImpl());
-
   sl.registerLazySingleton<EligibilityRepository>(() => EligibilityRepositoryImpl());
-
-
   sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl());
-
   sl.registerLazySingleton<DocumentRepository>(() => DocumentRepositoryImpl());
-
   sl.registerLazySingleton<ChecklistRepository>(() => ChecklistRepositoryImpl());
 }
