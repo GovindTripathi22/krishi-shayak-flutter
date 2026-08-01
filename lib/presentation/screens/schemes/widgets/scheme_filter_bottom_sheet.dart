@@ -5,7 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../domain/entities/scheme_filter_params.dart';
 import '../../../common_widgets/app_button.dart';
-import '../../providers/scheme_providers.dart';
+import '../../../providers/scheme_providers.dart';
 
 class SchemeFilterBottomSheet extends ConsumerStatefulWidget {
   const SchemeFilterBottomSheet({super.key});

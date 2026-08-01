@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/colors/app_colors.dart' if (dart.library.io) '../../core/constants/app_colors.dart';
+import '../../core/constants/app_colors.dart';
 import '../../core/routing/app_routes.dart';
 import 'language_selector_widget.dart';
 

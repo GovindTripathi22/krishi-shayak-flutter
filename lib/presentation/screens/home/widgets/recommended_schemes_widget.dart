@@ -5,8 +5,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../common_widgets/app_button.dart';
 import '../../../common_widgets/app_card.dart';
-import '../../providers/dashboard_providers.dart';
-import '../../providers/scheme_providers.dart';
+import '../../../providers/dashboard_providers.dart';
+import '../../../providers/scheme_providers.dart';
 import '../../schemes/scheme_details_screen.dart';
 
 class RecommendedSchemesWidget extends ConsumerWidget {

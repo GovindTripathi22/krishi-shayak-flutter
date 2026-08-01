@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../common_widgets/app_card.dart';
-import '../../providers/dashboard_providers.dart';
+import '../../../providers/dashboard_providers.dart';
 import '../../schemes/scheme_details_screen.dart';
 
 class ContinueReadingWidget extends ConsumerWidget {

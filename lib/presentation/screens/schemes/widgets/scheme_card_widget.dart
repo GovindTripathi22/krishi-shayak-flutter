@@ -5,7 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../domain/entities/government_scheme_entity.dart';
 import '../../../common_widgets/app_card.dart';
-import '../../providers/scheme_providers.dart';
+import '../../../providers/scheme_providers.dart';
 
 class SchemeCardWidget extends ConsumerWidget {
   final GovernmentSchemeEntity scheme;

@@ -5,7 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../domain/entities/farmer_alert_entity.dart';
 import '../../../common_widgets/app_card.dart';
-import '../../providers/dashboard_providers.dart';
+import '../../../providers/dashboard_providers.dart';
 
 class AlertsCarouselWidget extends ConsumerWidget {
   const AlertsCarouselWidget({super.key});
