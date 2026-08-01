@@ -13,7 +13,7 @@ import '../../common_widgets/app_empty_state_widget.dart';
 import '../../common_widgets/app_loading_indicator.dart';
 import '../../common_widgets/app_search_bar.dart';
 import '../../common_widgets/app_top_bar.dart';
-import '../providers/document_providers.dart';
+import '../../providers/document_providers.dart';
 import 'document_details_screen.dart';
 
 class PdfExplainerScreen extends ConsumerWidget {

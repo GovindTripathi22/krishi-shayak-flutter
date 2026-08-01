@@ -10,7 +10,7 @@ import '../../../core/routing/app_routes.dart';
 import '../../common_widgets/app_button.dart';
 import '../../common_widgets/app_text_field.dart';
 import '../../common_widgets/app_top_bar.dart';
-import '../auth_controller_provider.dart';
+import '../../providers/auth_controller_provider.dart';
 
 class OtpVerificationScreen extends ConsumerStatefulWidget {
   final String phoneNumber;

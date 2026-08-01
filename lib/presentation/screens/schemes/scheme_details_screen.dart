@@ -16,7 +16,7 @@ import '../../common_widgets/app_error_widget.dart';
 import '../../common_widgets/app_loading_indicator.dart';
 import '../../common_widgets/app_top_bar.dart';
 import '../ai_chat/ai_chat_screen.dart';
-import '../providers/scheme_providers.dart';
+import '../../providers/scheme_providers.dart';
 
 final schemeDetailsProvider =
     FutureProvider.family<GovernmentSchemeEntity?, String>((ref, schemeId) async {

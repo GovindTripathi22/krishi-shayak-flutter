@@ -11,7 +11,7 @@ import '../../common_widgets/app_bottom_navigation.dart';
 import '../../common_widgets/app_button.dart';
 import '../../common_widgets/app_card.dart';
 import '../../common_widgets/app_top_bar.dart';
-import '../auth_controller_provider.dart';
+import '../../providers/auth_controller_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

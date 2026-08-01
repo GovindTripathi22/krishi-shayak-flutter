@@ -14,7 +14,7 @@ import '../../common_widgets/app_card.dart';
 import '../../common_widgets/app_dialog.dart';
 import '../../common_widgets/app_top_bar.dart';
 import '../../common_widgets/language_selector_widget.dart';
-import '../auth_controller_provider.dart';
+import '../../providers/auth_controller_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});

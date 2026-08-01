@@ -7,7 +7,7 @@ import '../../../core/localization/app_localizations_provider.dart';
 import '../../../core/services/voice/voice_service.dart';
 import '../../common_widgets/app_loading_indicator.dart';
 import '../../common_widgets/app_top_bar.dart';
-import '../providers/chat_providers.dart';
+import '../../providers/chat_providers.dart';
 
 class AiChatScreen extends ConsumerStatefulWidget {
   final String? schemeId;

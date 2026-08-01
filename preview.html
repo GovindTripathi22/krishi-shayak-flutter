@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KrishiSahayak - Interactive Application Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-dark: #1B5E20;
+      --primary-light: #E8F5E9;
+      --accent: #FF8F00;
+      --bg: #F4F6F8;
+      --card-bg: #FFFFFF;
+      --text: #1C2A3A;
+      --text-muted: #5A6A75;
+      --border: #E0E4E8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+    body { background-color: #0E1621; color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+
+    .device-container {
+      width: 100%;
+      max-width: 420px;
+      height: 850px;
+      background: var(--bg);
+      border-radius: 40px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 10px solid #1C2A38;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 36px;
+      background: var(--primary-dark);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* Top App Bar */
+    .top-bar {
+      background: var(--primary);
+      color: white;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .top-bar h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .top-bar .actions { display: flex; gap: 12px; }
+    .top-bar .icon-btn { background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    /* Content Area */
+    .screen-content { flex: 1; overflow-y: auto; padding: 16px; display: none; }
+    .screen-content.active { display: block; }
+
+    /* Home Screen Components */
+    .weather-card {
+      background: linear-gradient(135deg, #2E7D32, #43A047);
+      color: white;
+      padding: 16px;
+      border-radius: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .weather-temp { font-size: 32px; font-weight: 700; }
+    .weather-desc { font-size: 13px; opacity: 0.9; }
+
+    .section-title { font-size: 16px; font-weight: 700; color: var(--text); margin: 16px 0 10px; display: flex; justify-content: space-between; align-items: center; }
+
+    .grid-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    .action-btn { background: white; border-radius: 16px; padding: 12px 6px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid var(--border); }
+    .action-btn .material-icons-round { color: var(--primary); font-size: 26px; }
+    .action-btn span { font-size: 11px; font-weight: 600; color: var(--text); }
+
+    .scheme-card {
+      background: white;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .scheme-card .badge { display: inline-block; background: var(--primary-light); color: var(--primary-dark); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; margin-bottom: 8px; }
+    .scheme-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .scheme-card p { font-size: 12px; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px; }
+    .scheme-card .btn-link { color: var(--primary); font-weight: 700; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+
+    /* AI Chat Screen */
+    .chat-container { display: flex; flex-direction: column; height: 100%; }
+    .chat-bubble { max-width: 82%; padding: 12px 16px; border-radius: 18px; font-size: 13px; line-height: 1.5; margin-bottom: 12px; }
+    .chat-bubble.ai { background: white; border: 1px solid var(--border); border-bottom-left-radius: 4px; align-self: flex-start; color: var(--text); }
+    .chat-bubble.user { background: var(--primary); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+    .voice-pulse { display: flex; align-items: center; justify-content: center; background: #FFEBEE; color: #D32F2F; border-radius: 20px; padding: 8px 16px; font-size: 12px; font-weight: 600; margin-bottom: 12px; gap: 8px; }
+
+    /* Notifications Screen */
+    .notif-card { background: white; border-radius: 16px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; border: 1px solid var(--border); }
+    .notif-icon { width: 38px; height: 38px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+    .notif-content h4 { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .notif-content p { font-size: 11px; color: var(--text-muted); }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 64px;
+      background: white;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); cursor: pointer; text-decoration: none; width: 20%; }
+    .nav-item.active { color: var(--primary); font-weight: 700; }
+    .nav-item .material-icons-round { font-size: 24px; }
+    .nav-item span { font-size: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="device-container">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>17:30</span>
+    <span>📶 5G 🔋 98%</span>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <h1 id="topBarTitle"><span class="material-icons-round">eco</span> KrishiSahayak</h1>
+    <div class="actions">
+      <button class="icon-btn" onclick="switchTab('notifications')"><span class="material-icons-round">notifications</span></button>
+      <button class="icon-btn" onclick="switchTab('settings')"><span class="material-icons-round">language</span></button>
+    </div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div id="screen-home" class="screen-content active">
+    <div class="weather-card">
+      <div>
+        <div class="weather-temp">28°C</div>
+        <div class="weather-desc">🌧️ Rainfall Expected Today</div>
+        <div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">Pune, Maharashtra</div>
+      </div>
+      <span class="material-icons-round" style="font-size: 48px; opacity: 0.9;">cloud_queue</span>
+    </div>
+
+    <div class="section-title">Quick Services</div>
+    <div class="grid-actions">
+      <div class="action-btn" onclick="switchTab('schemes')">
+        <span class="material-icons-round">menu_book</span>
+        <span>Schemes</span>
+      </div>
+      <div class="action-btn" onclick="switchTab('chat')">
+        <span class="material-icons-round">smart_toy</span>
+        <span>AI Chat</span>
+      </div>
+      <div class="action-btn" onclick="switchTab('voice')">
+        <span class="material-icons-round">mic</span>
+        <span>Voice</span>
+      </div>
+      <div class="action-btn" onclick="switchTab('eligibility')">
+        <span class="material-icons-round">verified</span>
+        <span>Eligible</span>
+      </div>
+    </div>
+
+    <div class="section-title">Recommended Schemes for You</div>
+    
+    <div class="scheme-card">
+      <span class="badge">98% Match • Financial Support</span>
+      <h3>PM-KISAN 17th Installment</h3>
+      <p>Direct income support of ₹6,000 per year for eligible landholding farmer families across India.</p>
+      <a href="https://pmkisan.gov.in" target="_blank" class="btn-link">Official Portal <span class="material-icons-round" style="font-size: 14px;">open_in_new</span></a>
+    </div>
+
+    <div class="scheme-card">
+      <span class="badge">95% Match • Insurance</span>
+      <h3>Pradhan Mantri Fasal Bima Yojana</h3>
+      <p>Comprehensive crop insurance against loss from natural risks for Kharif season crops.</p>
+      <a href="https://pmfby.gov.in" target="_blank" class="btn-link">Official Portal <span class="material-icons-round" style="font-size: 14px;">open_in_new</span></a>
+    </div>
+  </div>
+
+  <!-- AI CHAT SCREEN -->
+  <div id="screen-chat" class="screen-content">
+    <div class="chat-container">
+      <div class="chat-bubble ai">
+        🙏 <strong>Namaste Farmer Friend!</strong><br/>
+        I am your AI KrishiSahayak. Ask me any question about government subsidies, crop insurance, or document eligibility.
+      </div>
+      <div class="chat-bubble user">
+        Am I eligible for PM-KISAN subsidy on my 3 acres land in Maharashtra?
+      </div>
+      <div class="chat-bubble ai">
+        ✅ <strong>Yes, you qualify!</strong><br/>
+        Small and marginal landholders with up to 2 hectares (5 acres) in Maharashtra qualify for PM-KISAN.<br/><br/>
+        📋 <strong>Required Documents:</strong><br/>
+        • Aadhaar Card<br/>
+        • 7/12 & 8A Land Extract<br/>
+        • Bank Account Linked with Aadhaar
+      </div>
+    </div>
+  </div>
+
+  <!-- VOICE ASSISTANT SCREEN -->
+  <div id="screen-voice" class="screen-content" style="text-align: center; padding-top: 40px;">
+    <h2 style="font-size: 20px; font-weight: 700; color: var(--primary);">Voice Assistant Active</h2>
+    <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Available in Hindi, Marathi, Gujarati, Tamil, Telugu, Kannada & English</p>
+    
+    <div style="margin: 50px auto; width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #2E7D32, #43A047); display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 10px 30px rgba(46,125,50,0.4);">
+      <span class="material-icons-round" style="font-size: 48px;">mic</span>
+    </div>
+
+    <div class="voice-pulse">
+      <span class="material-icons-round" style="font-size: 16px;">graphic_eq</span>
+      Listening... Speak your scheme question
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS SCREEN -->
+  <div id="screen-notifications" class="screen-content">
+    <div class="section-title">Notifications & Alerts</div>
+    
+    <div class="notif-card">
+      <div class="notif-icon"><span class="material-icons-round">campaign</span></div>
+      <div class="notif-content">
+        <h4>PM-KISAN 17th Installment Released</h4>
+        <p>Direct credit of ₹2,000 sent to verified bank accounts.</p>
+      </div>
+    </div>
+
+    <div class="notif-card">
+      <div class="notif-icon" style="background: #FFF3E0; color: #E65100;"><span class="material-icons-round">timer</span></div>
+      <div class="notif-content">
+        <h4>Crop Insurance Deadline Reminder</h4>
+        <p>Apply for Kharif crop insurance before August 31.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home', this)">
+      <span class="material-icons-round">home</span>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('schemes', this)">
+      <span class="material-icons-round">menu_book</span>
+      <span>Schemes</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('chat', this)">
+      <span class="material-icons-round">smart_toy</span>
+      <span>AI Chat</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('voice', this)">
+      <span class="material-icons-round">mic</span>
+      <span>Voice</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('notifications', this)">
+      <span class="material-icons-round">notifications</span>
+      <span>Alerts</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(tabName, el) {
+    document.querySelectorAll('.screen-content').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    const target = document.getElementById('screen-' + tabName);
+    if (target) target.classList.add('active');
+    
+    if (el) el.classList.add('active');
+
+    const titles = {
+      'home': 'KrishiSahayak',
+      'schemes': 'Government Schemes',
+      'chat': 'AI Chat Assistant',
+      'voice': 'Voice Assistant',
+      'notifications': 'Smart Notifications',
+      'eligibility': 'Eligibility Checker'
+    };
+    document.getElementById('topBarTitle').innerHTML = `<span class="material-icons-round">eco</span> ${titles[tabName] || 'KrishiSahayak'}`;
+  }
+</script>
+</body>
+</html>

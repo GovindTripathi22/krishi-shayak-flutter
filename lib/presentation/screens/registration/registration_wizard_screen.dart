@@ -10,7 +10,7 @@ import '../../common_widgets/app_button.dart';
 import '../../common_widgets/app_card.dart';
 import '../../common_widgets/app_text_field.dart';
 import '../../common_widgets/app_top_bar.dart';
-import '../auth_controller_provider.dart';
+import '../../providers/auth_controller_provider.dart';
 import 'registration_provider.dart';
 
 class RegistrationWizardScreen extends ConsumerStatefulWidget {

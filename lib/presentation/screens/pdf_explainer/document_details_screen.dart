@@ -10,7 +10,7 @@ import '../../../domain/entities/smart_highlight_entity.dart';
 import '../../common_widgets/app_button.dart';
 import '../../common_widgets/app_card.dart';
 import '../../common_widgets/app_top_bar.dart';
-import '../providers/chat_providers.dart';
+import '../../providers/chat_providers.dart';
 
 class DocumentDetailsScreen extends ConsumerWidget {
   final ParsedDocumentEntity document;

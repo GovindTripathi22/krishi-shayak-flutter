@@ -12,7 +12,7 @@ import '../../common_widgets/app_card.dart';
 import '../../common_widgets/app_dialog.dart';
 import '../../common_widgets/app_text_field.dart';
 import '../../common_widgets/app_top_bar.dart';
-import '../auth_controller_provider.dart';
+import '../../providers/auth_controller_provider.dart';
 import 'otp_verification_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {

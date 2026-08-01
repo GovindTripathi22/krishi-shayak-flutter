@@ -11,7 +11,7 @@ import '../../common_widgets/app_error_widget.dart';
 import '../../common_widgets/app_loading_indicator.dart';
 import '../../common_widgets/app_search_bar.dart';
 import '../../common_widgets/app_top_bar.dart';
-import '../providers/scheme_providers.dart';
+import '../../providers/scheme_providers.dart';
 import 'scheme_details_screen.dart';
 import 'widgets/scheme_card_widget.dart';
 import 'widgets/scheme_filter_bottom_sheet.dart';
