@@ -6,7 +6,7 @@ const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const { isConnected } = require('./config/database');
 const errorHandler = require('./middleware/error.middleware');
-const { apiLimiter } = require('./middleware/rate_limiter.middleware');
+const { apiLimiter, authLimiter, aiLimiter } = require('./middleware/rate_limiter.middleware');
 
 // Route Imports
 const authRoutes = require('./routes/auth.routes');
@@ -22,28 +22,73 @@ const recommendationRoutes = require('./routes/recommendation.routes');
 
 const app = express();
 
-// Security & Utility Middlewares
-app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*', credentials: true }));
+// ─── Security Middlewares ─────────────────────────────────────────────────────
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+      },
+    },
+  })
+);
+
+// CORS — allow configured origins only
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+  : ['*'];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
+);
+
+// ─── Utility Middlewares ──────────────────────────────────────────────────────
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
-app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 
-// Rate Limiter
+// Logging: compact in production, verbose in dev
+app.use(
+  morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev', {
+    skip: (req) => req.path === '/health',
+  })
+);
+
+// ─── Rate Limiting ────────────────────────────────────────────────────────────
 app.use('/api/', apiLimiter);
+app.use('/api/v1/auth', authLimiter); // stricter for auth
+app.use('/api/v1/chat', aiLimiter);  // stricter for AI
 
-// Health Check Endpoint
+// ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
-    database: isConnected() ? 'Connected' : 'Disconnected',
-    server: 'Running',
+    version: '8.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    database: isConnected() ? 'Connected' : 'Offline (fallback mode)',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
   });
 });
 
-// API v1 Route Registration
+// ─── API v1 Route Registration ────────────────────────────────────────────────
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/profile', profileRoutes);
 app.use('/api/v1/schemes', schemeRoutes);
@@ -55,7 +100,7 @@ app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/bookmarks', bookmarkRoutes);
 app.use('/api/v1/recommendations', recommendationRoutes);
 
-// Compatibility endpoints for mobile clients that use the unversioned Phase 3 contract.
+// ─── Legacy Compatibility Routes (Phase 3 contract) ──────────────────────────
 app.use('/api/schemes', schemeRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/eligibility', eligibilityRoutes);
@@ -64,7 +109,15 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/checklist', checklistRoutes);
 
-// Global Error Handler
+// ─── 404 Handler ─────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found.`,
+  });
+});
+
+// ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use(errorHandler);
 
 module.exports = app;

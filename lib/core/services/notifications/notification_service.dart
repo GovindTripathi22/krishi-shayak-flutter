@@ -78,7 +78,7 @@ final notificationServiceProvider =
 
 /// Production Notification Service — connects to Node.js/Express backend
 class NotificationService extends StateNotifier<NotificationState> {
-  static const String _baseUrl = 'http://localhost:5004/api/v1';
+  static const String _baseUrl = 'http://localhost:5005/api/v1';
 
   NotificationService() : super(const NotificationState()) {
     fetchNotifications();

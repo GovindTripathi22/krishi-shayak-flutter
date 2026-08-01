@@ -21,7 +21,7 @@ if (flutterVersionCode == null) {
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    flutterVersionName = '1.0.0'
 }
 
 android {
@@ -51,9 +51,29 @@ android {
         multiDexEnabled true
     }
 
+    signingConfigs {
+        release {
+            // Configured to fallback to debug keystore if key.properties does not exist
+            def keyPropertiesFile = rootProject.file('key.properties')
+            if (keyPropertiesFile.exists()) {
+                def keyProperties = new Properties()
+                keyProperties.load(new FileInputStream(keyPropertiesFile))
+                storeFile file(keyProperties['storeFile'])
+                storePassword keyProperties['storePassword']
+                keyAlias keyProperties['keyAlias']
+                keyPassword keyProperties['keyPassword']
+            } else {
+                storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
+                storePassword "android"
+                keyAlias "androiddebugkey"
+                keyPassword "android"
+            }
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

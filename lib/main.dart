@@ -19,7 +19,7 @@ void main() async {
   // Initialize Dependency Injection & Services
   await initDependencyInjection();
 
-  AppLogger.info('KrishiSahayak Phase 1 initialized successfully.');
+  AppLogger.info('KrishiSahayak application initialized successfully.');
 
   runApp(
     const ProviderScope(

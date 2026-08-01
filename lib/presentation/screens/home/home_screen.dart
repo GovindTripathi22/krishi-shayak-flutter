@@ -33,7 +33,7 @@ class HomeScreen extends ConsumerWidget {
     final networkStatus = ref.watch(connectivityProvider);
     final farmerName = authState.farmerProfile?.fullName.isNotEmpty == true
         ? authState.farmerProfile!.fullName.split(' ').first
-        : (authState.isGuest ? 'Farmer Friend' : 'Ramesh');
+        : 'Farmer Friend';
 
     return Scaffold(
       bottomNavigationBar: const AppBottomNavigation(currentIndex: 0),

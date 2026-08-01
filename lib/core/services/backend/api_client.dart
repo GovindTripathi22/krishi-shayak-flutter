@@ -7,7 +7,7 @@ import '../storage/secure_storage_service.dart';
 class ApiClient {
   final String baseUrl;
 
-  ApiClient({this.baseUrl = 'http://localhost:5001/api/v1'});
+  ApiClient({this.baseUrl = 'http://localhost:5005/api/v1'});
 
   Future<Map<String, String>> _getHeaders({bool requireAuth = true}) async {
     final headers = <String, String>{

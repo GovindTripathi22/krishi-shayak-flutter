@@ -1,27 +1,22 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 enum Environment { development, staging, production }
 
-/// Environment Variables & Configuration Loader
+/// Environment Variables & Configuration Loader — Production Safe
 class EnvConfig {
   static Environment _environment = Environment.development;
 
   static Future<void> init({Environment environment = Environment.development}) async {
     _environment = environment;
-    try {
-      await dotenv.load(fileName: '.env');
-    } catch (_) {
-      // Fallback defaults if dotenv file is missing
-    }
   }
 
   static Environment get currentEnvironment => _environment;
 
-  static String get appName => dotenv.get('APP_NAME', fallback: 'KrishiSahayak');
-  static String get apiBaseUrl => dotenv.get('API_BASE_URL', fallback: 'https://api.KrishiSahayak.ai/v1');
-  static String get aiModelEndpoint => dotenv.get('AI_MODEL_ENDPOINT', fallback: 'https://ai.KrishiSahayak.ai/v1/chat');
-  static String get apiKey => dotenv.get('API_KEY', fallback: 'dev_key_KrishiSahayak_2026');
-  static bool get enableLogging => dotenv.get('ENABLE_LOGGING', fallback: 'true').toLowerCase() == 'true';
-  static bool get enableAnalytics => dotenv.get('ENABLE_ANALYTICS', fallback: 'false').toLowerCase() == 'true';
-  static String get firebaseProjectId => dotenv.get('FIREBASE_PROJECT_ID', fallback: 'KrishiSahayak-ai-dev');
+  static String get appName => 'KrishiSahayak';
+  static String get apiBaseUrl => const String.fromEnvironment(
+        'API_BASE_URL',
+        defaultValue: 'http://localhost:5004/api/v1',
+      );
+  static String get aiModelEndpoint => '$apiBaseUrl/chat';
+  static bool get enableLogging => _environment != Environment.production;
+  static bool get enableAnalytics => _environment == Environment.production;
+  static String get firebaseProjectId => 'krishisahayak-ai';
 }

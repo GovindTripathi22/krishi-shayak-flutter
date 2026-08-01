@@ -1,0 +1,6 @@
+# Key properties template for signing production release APK / AAB
+# Copy to key.properties and fill in your keystore credentials
+storePassword=your_keystore_password
+keyPassword=your_key_password
+keyAlias=upload
+storeFile=../upload-keystore.jks

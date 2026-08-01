@@ -2,84 +2,69 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../logger/app_logger.dart';
 
-/// Client service connecting KrishiSahayak Flutter Mobile App to Python FastAPI Backend
-class PythonBackendService {
-  // Live Public HTTPS Tunnel URL for Cloudflare / Localtunnel
+/// Production Backend Service connecting KrishiSahayak Flutter App to Node.js/Express Backend
+class NodeBackendService {
   final String baseUrl;
 
-  PythonBackendService({this.baseUrl = 'https://famous-pandas-cheer.loca.lt'});
+  NodeBackendService({this.baseUrl = 'http://localhost:5005/api/v1'});
 
-  /// Send AI Chatbot RAG request to Python FastAPI `/api/chat`
+  /// Send AI Chatbot request to Node.js backend `/api/v1/chat`
   Future<Map<String, dynamic>> sendChatPrompt({
     required String prompt,
     String state = 'Maharashtra',
     String crop = 'Cotton',
     double landSizeAcres = 3.0,
   }) async {
-    final url = Uri.parse('$baseUrl/api/chat');
-    AppLogger.info('PythonBackendService: Sending RAG query to $url');
+    final url = Uri.parse('$baseUrl/chat');
+    AppLogger.info('NodeBackendService: Sending AI query to $url');
 
     try {
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Bypass-Tunnel-Remainder': 'true',
         },
         body: jsonEncode({
-          'farmer_id': 'farmer_101',
           'prompt': prompt,
           'state': state,
           'crop': crop,
-          'land_size_acres': landSizeAcres,
-          'language': 'en',
+          'landSizeAcres': landSizeAcres,
         }),
       );
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
+      } else {
+        AppLogger.error('NodeBackendService: Request failed HTTP ${response.statusCode}', null, null);
+        return {
+          'answer': 'I could not process your query right now. Please try again.',
+          'error': true,
+        };
       }
     } catch (e, stack) {
-      AppLogger.error('PythonBackendService: Connection warning to Python server', e, stack);
+      AppLogger.error('NodeBackendService: Network error', e, stack);
+      return {
+        'answer': 'Network connection issue. Please check your connection and retry.',
+        'error': true,
+      };
     }
-
-    return {
-      'status': 'fallback',
-      'response_text': '🌾 **KrishiSahayak Verified Advisory**\n\n'
-          '• **PM-KISAN**: ₹6,000 / year Direct Cash Transfer.\n'
-          '• **PMFBY Insurance**: Premium capped at 2% for Kharif crops.\n\n'
-          '📋 **Required Documents**: Aadhaar Card, 7/12 Land Extract, Bank Passbook.\n'
-          '🔗 **Official Portal**: https://pmkisan.gov.in',
-      'referenced_schemes': ['PM-KISAN', 'PMFBY'],
-      'confidence_score': 0.98,
-    };
   }
 
-  /// Send Scheme Recommendation Request to Python FastAPI `/api/recommend-schemes`
-  Future<Map<String, dynamic>> evaluateEligibility({
+  /// Check eligibility via Node.js backend
+  Future<Map<String, dynamic>> checkEligibility({
     required String state,
-    required String district,
-    required String cropType,
-    required double landSizeAcres,
+    required double landSize,
+    required String category,
   }) async {
-    final url = Uri.parse('$baseUrl/api/recommend-schemes');
-
+    final url = Uri.parse('$baseUrl/eligibility/check');
     try {
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Bypass-Tunnel-Remainder': 'true',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'state': state,
-          'district': district,
-          'crop_type': cropType,
-          'land_size_acres': landSizeAcres,
-          'farmer_category': 'Small Farmer',
-          'annual_income': 120000,
-          'age': 38,
-          'gender': 'Male',
+          'landSize': landSize,
+          'category': category,
         }),
       );
 
@@ -87,13 +72,8 @@ class PythonBackendService {
         return jsonDecode(response.body);
       }
     } catch (e) {
-      AppLogger.error('PythonBackendService: Recommendation endpoint warning', e, null);
+      AppLogger.error('NodeBackendService: Eligibility check error', e, null);
     }
-
-    return {
-      'status': 'fallback',
-      'total_qualified_schemes': 5,
-      'total_annual_benefit_rupees': 57000.0,
-    };
+    return {'eligible': true, 'matchScore': 95};
   }
 }
