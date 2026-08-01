@@ -11,21 +11,21 @@ final connectivityProvider = StateNotifierProvider<ConnectivityNotifier, Network
 });
 
 class ConnectivityNotifier extends StateNotifier<NetworkStatus> {
-  late final StreamSubscription<ConnectivityResult> _subscription;
+  late final StreamSubscription<List<ConnectivityResult>> _subscription;
 
   ConnectivityNotifier() : super(NetworkStatus.online) {
     _init();
   }
 
   void _init() async {
-    final result = await Connectivity().checkConnectivity();
-    _updateStatus(result);
+    final results = await Connectivity().checkConnectivity();
+    _updateStatus(results);
 
     _subscription = Connectivity().onConnectivityChanged.listen(_updateStatus);
   }
 
-  void _updateStatus(ConnectivityResult result) {
-    if (result == ConnectivityResult.none) {
+  void _updateStatus(List<ConnectivityResult> results) {
+    if (results.contains(ConnectivityResult.none) || results.isEmpty) {
       state = NetworkStatus.offline;
       AppLogger.warning('NetworkStatus: Device is OFFLINE');
     } else {

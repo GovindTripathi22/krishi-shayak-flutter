@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/injection_container.dart';
 import '../../data/models/weather_model.dart';
 import '../../domain/entities/farmer_alert_entity.dart';
+import '../../domain/entities/government_scheme_entity.dart';
 import '../../domain/entities/recommendation_entity.dart';
 import '../../domain/entities/weather_entity.dart';
 import '../../domain/repositories/government_scheme_repository.dart';
 import '../../domain/repositories/recommendation_repository.dart';
-import 'auth_controller_provider.dart';
-
 // Dynamic Time-of-Day Greeting
 final timeGreetingProvider = Provider<String>((ref) {
   final hour = DateTime.now().hour;

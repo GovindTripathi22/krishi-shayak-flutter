@@ -230,7 +230,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                             style: TextStyle(
                                 color: message.isUser
                                     ? Colors.white
-                                    : AppColors.textPrimary),
+                                    : AppColors.textDark),
                           ),
                           if (!message.isUser &&
                               message.referencedSchemeNames.isNotEmpty)

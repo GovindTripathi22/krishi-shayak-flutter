@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../domain/entities/eligibility_result_entity.dart';
 import '../../common_widgets/app_button.dart';
 import '../../common_widgets/app_card.dart';
 import '../../common_widgets/app_empty_state_widget.dart';

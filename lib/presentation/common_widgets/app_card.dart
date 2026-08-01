@@ -6,6 +6,7 @@ class AppCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
   final Color? backgroundColor;
   final double? elevation;
   final BorderSide? border;
@@ -15,6 +16,7 @@ class AppCard extends StatelessWidget {
     required this.child,
     this.onTap,
     this.padding,
+    this.margin,
     this.backgroundColor,
     this.elevation,
     this.border,
@@ -29,6 +31,7 @@ class AppCard extends StatelessWidget {
     );
 
     return Card(
+      margin: margin,
       elevation: elevation ?? AppConstants.elevationLow,
       color: backgroundColor ?? theme.colorScheme.surface,
       shape: RoundedRectangleBorder(

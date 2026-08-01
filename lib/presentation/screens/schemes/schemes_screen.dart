@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../../domain/entities/scheme_filter_params.dart';
 import '../../../domain/entities/scheme_sort_option.dart';
 import '../../common_widgets/app_bottom_navigation.dart';
 import '../../common_widgets/app_empty_state_widget.dart';
