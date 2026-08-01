@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
@@ -17,12 +19,12 @@ import 'document_details_screen.dart';
 class PdfExplainerScreen extends ConsumerWidget {
   const PdfExplainerScreen({super.key});
 
-  void _processMockUpload(BuildContext context, WidgetRef ref, String fileName, String fileType) async {
+  Future<void> _processUpload(BuildContext context, WidgetRef ref, {required String filePath, required String fileName, required String fileType, required int fileSizeBytes}) async {
     final doc = await ref.read(documentProcessingNotifierProvider.notifier).processFile(
-          filePath: '/storage/emulated/0/Download/$fileName',
+          filePath: filePath,
           fileName: fileName,
           fileType: fileType,
-          fileSize: '1.4 MB',
+          fileSize: '$fileSizeBytes bytes',
         );
 
     if (doc != null && context.mounted) {
@@ -33,6 +35,17 @@ class PdfExplainerScreen extends ConsumerWidget {
         ),
       );
     }
+  }
+
+  Future<void> _pickPdf(BuildContext context, WidgetRef ref) async {
+    final selection = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: const ['pdf']);
+    final file = selection?.files.single;
+    if (file?.path != null) await _processUpload(context, ref, filePath: file!.path!, fileName: file.name, fileType: 'pdf', fileSizeBytes: file.size);
+  }
+
+  Future<void> _pickImage(BuildContext context, WidgetRef ref, ImageSource source) async {
+    final image = await ImagePicker().pickImage(source: source, imageQuality: 90);
+    if (image != null) await _processUpload(context, ref, filePath: image.path, fileName: image.name, fileType: 'image', fileSizeBytes: await image.length());
   }
 
   @override
@@ -95,7 +108,7 @@ class PdfExplainerScreen extends ConsumerWidget {
                             ),
                             icon: const Icon(Icons.upload_file_rounded, size: 18.0),
                             label: const Text('Upload PDF'),
-                            onPressed: () => _processMockUpload(context, ref, 'Drip_Irrigation_Scheme_2026.pdf', 'pdf'),
+                            onPressed: procState.isProcessing ? null : () => _pickPdf(context, ref),
                           ),
                         ),
                         const SizedBox(width: 10.0),
@@ -103,10 +116,18 @@ class PdfExplainerScreen extends ConsumerWidget {
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.camera_alt_rounded, size: 18.0),
                             label: const Text('Scan Image'),
-                            onPressed: () => _processMockUpload(context, ref, 'PMKSY_Brochure_Scan.jpeg', 'image'),
+                            onPressed: procState.isProcessing ? null : () => _pickImage(context, ref, ImageSource.camera),
                           ),
                         ),
                       ],
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        icon: const Icon(Icons.photo_library_outlined, size: 18),
+                        label: const Text('Choose image from gallery'),
+                        onPressed: procState.isProcessing ? null : () => _pickImage(context, ref, ImageSource.gallery),
+                      ),
                     ),
                   ],
                 ),

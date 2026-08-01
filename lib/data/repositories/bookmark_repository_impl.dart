@@ -1,64 +1,25 @@
-import '../../core/logger/app_logger.dart';
+import '../../core/services/backend/api_client.dart';
 import '../../domain/entities/government_scheme_entity.dart';
 import '../../domain/repositories/bookmark_repository.dart';
-import '../../domain/repositories/government_scheme_repository.dart';
-import '../datasources/scheme_local_datasource.dart';
+import '../models/government_scheme_model.dart';
 
 class BookmarkRepositoryImpl implements BookmarkRepository {
-  final SchemeLocalDataSource localDataSource;
-  final GovernmentSchemeRepository schemeRepository;
-
-  BookmarkRepositoryImpl({
-    required this.localDataSource,
-    required this.schemeRepository,
-  });
+  final ApiClient _apiClient;
+  BookmarkRepositoryImpl({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
 
   @override
   Future<List<GovernmentSchemeEntity>> getBookmarkedSchemes() async {
-    final bookmarkedIds = await localDataSource.getBookmarkedSchemeIds();
-    final allSchemes = await schemeRepository.getSchemes(pageSize: 100);
-
-    return allSchemes.where((s) => bookmarkedIds.contains(s.id)).map((s) => s.copyWith(isBookmarked: true)).toList();
+    final response = await _apiClient.get('/bookmarks') as Map<String, dynamic>;
+    return (response['data'] as List<dynamic>? ?? []).map((item) => GovernmentSchemeModel.fromJson(Map<String, dynamic>.from(item as Map))).toList();
   }
-
   @override
-  Future<bool> isBookmarked(String schemeId) async {
-    final ids = await localDataSource.getBookmarkedSchemeIds();
-    return ids.contains(schemeId);
-  }
-
+  Future<bool> isBookmarked(String schemeId) async => (await getBookmarkedSchemes()).any((scheme) => scheme.id == schemeId);
   @override
-  Future<void> addBookmark(String schemeId) async {
-    final ids = await localDataSource.getBookmarkedSchemeIds();
-    if (!ids.contains(schemeId)) {
-      ids.add(schemeId);
-      await localDataSource.saveBookmarkedSchemeIds(ids);
-      AppLogger.info('BookmarkRepositoryImpl: Added bookmark $schemeId');
-    }
-  }
-
+  Future<void> addBookmark(String schemeId) async { await _apiClient.post('/bookmarks', body: {'schemeId': schemeId}); }
   @override
-  Future<void> removeBookmark(String schemeId) async {
-    final ids = await localDataSource.getBookmarkedSchemeIds();
-    if (ids.contains(schemeId)) {
-      ids.remove(schemeId);
-      await localDataSource.saveBookmarkedSchemeIds(ids);
-      AppLogger.info('BookmarkRepositoryImpl: Removed bookmark $schemeId');
-    }
-  }
-
+  Future<void> removeBookmark(String schemeId) async { await _apiClient.delete('/bookmarks/$schemeId'); }
   @override
-  Future<void> toggleBookmark(String schemeId) async {
-    final bookmarked = await isBookmarked(schemeId);
-    if (bookmarked) {
-      await removeBookmark(schemeId);
-    } else {
-      await addBookmark(schemeId);
-    }
-  }
-
+  Future<void> toggleBookmark(String schemeId) async { if (await isBookmarked(schemeId)) { await removeBookmark(schemeId); } else { await addBookmark(schemeId); } }
   @override
-  Future<void> syncBookmarks() async {
-    AppLogger.info('BookmarkRepositoryImpl: Syncing bookmarks with backend');
-  }
+  Future<void> syncBookmarks() async { await getBookmarkedSchemes(); }
 }

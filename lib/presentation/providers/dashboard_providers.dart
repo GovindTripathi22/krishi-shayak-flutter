@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/injection_container.dart';
 import '../../data/models/weather_model.dart';
 import '../../domain/entities/farmer_alert_entity.dart';
-import '../../domain/entities/government_scheme_entity.dart';
+import '../../domain/entities/recommendation_entity.dart';
 import '../../domain/entities/weather_entity.dart';
 import '../../domain/repositories/government_scheme_repository.dart';
+import '../../domain/repositories/recommendation_repository.dart';
 import 'auth_controller_provider.dart';
 
 // Dynamic Time-of-Day Greeting
@@ -72,21 +73,10 @@ class AlertsNotifier extends StateNotifier<List<FarmerAlertEntity>> {
 }
 
 // Recommended Schemes Provider
-final recommendedSchemesProvider = FutureProvider<List<GovernmentSchemeEntity>>((ref) async {
-  final repo = sl<GovernmentSchemeRepository>();
+final recommendedSchemesProvider = FutureProvider<List<RecommendationEntity>>((ref) async {
   final profile = ref.watch(authControllerProvider).farmerProfile;
-
-  final allSchemes = await repo.getSchemes(pageSize: 50);
-  if (profile != null) {
-    final recommended = allSchemes.where((s) {
-      final cropMatch = s.applicableCrops.any((c) => c.toLowerCase().contains(profile.primaryCrop.toLowerCase()) || c == 'All Crops');
-      final stateMatch = s.applicableStates.any((st) => st.toLowerCase() == profile.state.toLowerCase() || st == 'All India');
-      return cropMatch || stateMatch;
-    }).toList();
-
-    if (recommended.isNotEmpty) return recommended;
-  }
-  return allSchemes.take(4).toList();
+  if (profile == null) return [];
+  return sl<RecommendationRepository>().getTopRecommendations(profile);
 });
 
 // Continue Reading Last Scheme Provider

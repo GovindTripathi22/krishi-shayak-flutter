@@ -1,129 +1,24 @@
-import 'dart:convert';
-
-import '../../core/logger/app_logger.dart';
-import '../../core/services/ai/gemini_document_analyzer.dart';
-import '../../core/services/document/ocr_text_extractor.dart';
-import '../../core/services/storage/preferences_service.dart';
+import '../../core/services/backend/api_client.dart';
 import '../../domain/entities/parsed_document_entity.dart';
+import '../../domain/entities/smart_highlight_entity.dart';
 import '../../domain/repositories/document_repository.dart';
 import '../models/parsed_document_model.dart';
 
 class DocumentRepositoryImpl implements DocumentRepository {
-  final OcrTextExtractor ocrExtractor;
-  final GeminiDocumentAnalyzer analyzer;
-
-  static const String _keyDocuments = 'pref_saved_documents_v1';
-
-  DocumentRepositoryImpl({
-    required this.ocrExtractor,
-    required this.analyzer,
-  });
-
+  final ApiClient _apiClient;
+  DocumentRepositoryImpl({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+  ParsedDocumentEntity _fromApi(Map<String, dynamic> json) {
+    final points = (json['importantPoints'] as List<dynamic>? ?? []).map((item) => item.toString()).toList();
+    final deadlines = (json['deadlines'] as List<dynamic>? ?? []).map((item) => item.toString()).toList();
+    return ParsedDocumentModel(id: json['id'].toString(), fileName: json['fileName']?.toString() ?? '', fileType: json['fileType']?.toString() ?? 'pdf', uploadDate: DateTime.parse(json['uploadDate'].toString()), fileSize: '${json['fileSizeBytes'] ?? 0} bytes', category: 'Document Analysis', rawOcrText: json['extractedTextPreview']?.toString() ?? '', simpleSummary: json['summary']?.toString() ?? '', purpose: points.isEmpty ? '' : points.first, benefits: points.join('\n'), eligibility: (json['eligibilityInformation'] as List<dynamic>? ?? []).map((item) => item.toString()).toList(), requiredDocuments: (json['requiredDocuments'] as List<dynamic>? ?? []).map((item) => item.toString()).toList(), deadlines: deadlines, warnings: (json['warnings'] as List<dynamic>? ?? []).map((item) => item.toString()).toList(), smartHighlights: [for (final deadline in deadlines) SmartHighlightEntity(text: deadline, type: HighlightType.deadline)], languageCode: json['language']?.toString() ?? 'en');
+  }
+  List<ParsedDocumentEntity> _list(dynamic response) => ((response as Map<String, dynamic>)['data'] as List<dynamic>? ?? []).map((item) => _fromApi(Map<String, dynamic>.from(item as Map))).toList();
   @override
-  Future<List<ParsedDocumentEntity>> getSavedDocuments() async {
-    try {
-      final rawStr = PreferencesService.getString(_keyDocuments);
-      if (rawStr != null && rawStr.isNotEmpty) {
-        final List<dynamic> list = jsonDecode(rawStr);
-        return list.map((j) => ParsedDocumentModel.fromJson(j as Map<String, dynamic>)).toList();
-      }
-    } catch (e, stack) {
-      AppLogger.error('DocumentRepositoryImpl: Error reading saved documents', e, stack);
-    }
-    return [];
-  }
-
+  Future<List<ParsedDocumentEntity>> getSavedDocuments() async => _list(await _apiClient.get('/pdf/history'));
   @override
-  Future<ParsedDocumentEntity> processAndSaveDocument({
-    required String filePath,
-    required String fileName,
-    required String fileType,
-    required String fileSize,
-  }) async {
-    AppLogger.info('DocumentRepositoryImpl: Processing $fileName');
-
-    // 1. OCR Text Extraction
-    final ocrResult = await ocrExtractor.extractTextFromFile(
-      filePath: filePath,
-      fileName: fileName,
-    );
-
-    // 2. Gemini AI Analysis
-    final parsedModel = await analyzer.analyzeDocumentText(
-      fileName: fileName,
-      rawOcrText: ocrResult.extractedText,
-      fileType: fileType,
-      fileSize: fileSize,
-    );
-
-    // 3. Save to local storage
-    final docs = await getSavedDocuments();
-    final updatedList = [parsedModel, ...docs.map((d) => ParsedDocumentModel(
-      id: d.id,
-      fileName: d.fileName,
-      fileType: d.fileType,
-      uploadDate: d.uploadDate,
-      fileSize: d.fileSize,
-      category: d.category,
-      rawOcrText: d.rawOcrText,
-      simpleSummary: d.simpleSummary,
-      purpose: d.purpose,
-      benefits: d.benefits,
-      eligibility: d.eligibility,
-      requiredDocuments: d.requiredDocuments,
-      deadlines: d.deadlines,
-      warnings: d.warnings,
-      smartHighlights: d.smartHighlights,
-      languageCode: d.languageCode,
-    ))];
-
-    await _saveToStorage(updatedList);
-    return parsedModel;
-  }
-
+  Future<ParsedDocumentEntity> processAndSaveDocument({required String filePath, required String fileName, required String fileType, required String fileSize}) async { final response = await _apiClient.uploadFile('/pdf/upload', filePath: filePath); return _fromApi(Map<String, dynamic>.from((response as Map<String, dynamic>)['data'] as Map)); }
   @override
-  Future<void> deleteDocument(String documentId) async {
-    final docs = await getSavedDocuments();
-    final updatedList = docs.where((d) => d.id != documentId).map((d) => ParsedDocumentModel(
-      id: d.id,
-      fileName: d.fileName,
-      fileType: d.fileType,
-      uploadDate: d.uploadDate,
-      fileSize: d.fileSize,
-      category: d.category,
-      rawOcrText: d.rawOcrText,
-      simpleSummary: d.simpleSummary,
-      purpose: d.purpose,
-      benefits: d.benefits,
-      eligibility: d.eligibility,
-      requiredDocuments: d.requiredDocuments,
-      deadlines: d.deadlines,
-      warnings: d.warnings,
-      smartHighlights: d.smartHighlights,
-      languageCode: d.languageCode,
-    )).toList();
-
-    await _saveToStorage(updatedList);
-  }
-
+  Future<void> deleteDocument(String documentId) async { await _apiClient.delete('/pdf/$documentId'); }
   @override
-  Future<List<ParsedDocumentEntity>> searchDocuments(String query) async {
-    final docs = await getSavedDocuments();
-    if (query.trim().isEmpty) return docs;
-    final q = query.toLowerCase();
-
-    return docs.where((d) {
-      final titleMatch = d.fileName.toLowerCase().contains(q);
-      final catMatch = d.category.toLowerCase().contains(q);
-      final benefitMatch = d.benefits.toLowerCase().contains(q);
-      final ocrMatch = d.rawOcrText.toLowerCase().contains(q);
-
-      return titleMatch || catMatch || benefitMatch || ocrMatch;
-    }).toList();
-  }
-
-  Future<void> _saveToStorage(List<ParsedDocumentModel> list) async {
-    final jsonStr = jsonEncode(list.map((d) => d.toJson()).toList());
-    await PreferencesService.setString(_keyDocuments, jsonStr);
-  }
+  Future<List<ParsedDocumentEntity>> searchDocuments(String query) async => _list(await _apiClient.get('/pdf/history?q=${Uri.encodeQueryComponent(query)}'));
 }

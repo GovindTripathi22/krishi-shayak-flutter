@@ -1,71 +1,60 @@
-import 'dart:convert';
-
-import '../../core/logger/app_logger.dart';
-import '../../core/services/eligibility/eligibility_engine.dart';
-import '../../core/services/storage/preferences_service.dart';
+import '../../core/services/backend/api_client.dart';
 import '../../domain/entities/eligibility_history_entity.dart';
 import '../../domain/entities/eligibility_input_params.dart';
 import '../../domain/entities/eligibility_result_entity.dart';
+import '../../domain/entities/government_scheme_entity.dart';
+import '../../domain/entities/scheme_faq.dart';
 import '../../domain/repositories/eligibility_repository.dart';
-import '../../domain/repositories/government_scheme_repository.dart';
-import '../models/eligibility_history_model.dart';
+import '../models/government_scheme_model.dart';
 
 class EligibilityRepositoryImpl implements EligibilityRepository {
-  final GovernmentSchemeRepository schemeRepository;
-  static const String _keyHistory = 'pref_eligibility_history_v1';
+  final ApiClient _apiClient;
+  EligibilityRepositoryImpl({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
 
-  EligibilityRepositoryImpl({required this.schemeRepository});
+  Map<String, dynamic> _profile(EligibilityInputParams input) => {
+    'state': input.state, 'district': input.district, 'village': input.village,
+    'cropType': input.primaryCrop.split('/').map((crop) => crop.trim()).where((crop) => crop.isNotEmpty).toList(),
+    'landSize': _number(input.landSize), 'annualIncome': _number(input.annualIncome),
+    'category': input.farmerCategory, 'gender': input.gender, 'age': input.age,
+    'farmerType': input.landOwnership == 'Owned' ? 'Owner' : input.landOwnership,
+    'irrigationType': input.irrigationType.replaceFirst(' Irrigation', ''),
+  };
+  double _number(String raw) => double.tryParse(raw.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+  GovernmentSchemeEntity _scheme(Map<String, dynamic> json) => GovernmentSchemeModel.fromJson(json);
+  RecommendationCategory _category(String status) => switch (status) {
+    'Eligible' => RecommendationCategory.highlyRecommended,
+    'Partially Eligible' => RecommendationCategory.partiallyEligible,
+    _ => RecommendationCategory.notEligible,
+  };
+  EligibilityResultEntity _result(Map<String, dynamic> data) {
+    final suggestions = (data['suggestions'] as List<dynamic>? ?? []).map((item) => item.toString()).toList();
+    return EligibilityResultEntity(
+      scheme: _scheme(Map<String, dynamic>.from(data['scheme'] as Map)),
+      matchPercentage: (data['matchPercentage'] as num?)?.toDouble() ?? 0,
+      categoryTag: _category(data['status']?.toString() ?? ''),
+      whyEligible: (data['reasons'] as List<dynamic>? ?? []).map((item) => item.toString()).toList(),
+      whyIneligible: (data['missingCriteria'] as List<dynamic>? ?? []).map((item) => item.toString()).toList(),
+      missingDocuments: (data['missingDocuments'] as List<dynamic>? ?? []).map((item) => item.toString()).toList(),
+      actionableAdvice: suggestions.join(' '),
+    );
+  }
 
   @override
   Future<List<EligibilityResultEntity>> evaluateEligibility(EligibilityInputParams input) async {
-    AppLogger.info('EligibilityRepositoryImpl: Evaluating eligibility for state ${input.state}, crop ${input.primaryCrop}');
-    final schemes = await schemeRepository.getSchemes(pageSize: 100);
-    return EligibilityEngine.evaluateAll(schemes: schemes, input: input);
+    final response = await _apiClient.post('/eligibility/check', body: {
+      'profile': _profile(input),
+      'documents': [if (input.hasAadhaarLinkedBank) 'Aadhaar', if (input.hasAadhaarLinkedBank) 'Bank account details'],
+    }) as Map<String, dynamic>;
+    return (response['data'] as List<dynamic>? ?? []).map((item) => _result(Map<String, dynamic>.from(item as Map))).toList();
   }
-
   @override
-  Future<void> saveCheckHistory(EligibilityInputParams input, List<EligibilityResultEntity> results) async {
-    try {
-      final historyList = await getCheckHistory();
-
-      final topSchemes = results.take(3).map((r) => r.scheme.name).toList();
-      final newHistory = EligibilityHistoryModel(
-        id: 'hist_${DateTime.now().millisecondsSinceEpoch}',
-        checkDate: DateTime.now(),
-        state: input.state,
-        crop: input.primaryCrop,
-        totalEligibleCount: results.where((r) => r.matchPercentage >= 60.0).length,
-        topSchemeNames: topSchemes,
-      );
-
-      final updatedList = [newHistory, ...historyList.map((e) => EligibilityHistoryModel(
-        id: e.id,
-        checkDate: e.checkDate,
-        state: e.state,
-        crop: e.crop,
-        totalEligibleCount: e.totalEligibleCount,
-        topSchemeNames: e.topSchemeNames,
-      ))];
-
-      final jsonStr = jsonEncode(updatedList.map((h) => h.toJson()).toList());
-      await PreferencesService.setString(_keyHistory, jsonStr);
-      AppLogger.info('EligibilityRepositoryImpl: Saved eligibility check history');
-    } catch (e, stack) {
-      AppLogger.error('EligibilityRepositoryImpl: Error saving history', e, stack);
-    }
-  }
-
+  Future<void> saveCheckHistory(EligibilityInputParams input, List<EligibilityResultEntity> results) async {}
   @override
   Future<List<EligibilityHistoryEntity>> getCheckHistory() async {
-    try {
-      final rawStr = PreferencesService.getString(_keyHistory);
-      if (rawStr != null && rawStr.isNotEmpty) {
-        final List<dynamic> list = jsonDecode(rawStr);
-        return list.map((j) => EligibilityHistoryModel.fromJson(j as Map<String, dynamic>)).toList();
-      }
-    } catch (e, stack) {
-      AppLogger.error('EligibilityRepositoryImpl: Error reading history', e, stack);
-    }
-    return [];
+    final response = await _apiClient.get('/eligibility/history') as Map<String, dynamic>;
+    return (response['data'] as List<dynamic>? ?? []).map((item) {
+      final data = Map<String, dynamic>.from(item as Map);
+      return EligibilityHistoryEntity(id: data['id'].toString(), checkDate: DateTime.parse(data['createdAt'].toString()), state: '', crop: data['schemeName']?.toString() ?? 'Scheme check', totalEligibleCount: data['status'] == 'Eligible' ? 1 : 0, topSchemeNames: [data['schemeName']?.toString() ?? '']);
+    }).toList();
   }
 }

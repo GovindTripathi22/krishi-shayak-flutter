@@ -8,25 +8,22 @@ const RecommendationSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    recommendedSchemeIds: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'GovernmentScheme',
-      },
-    ],
-    matchConfidencePercentage: {
-      type: Number,
-      default: 0,
-    },
-    reasoningBullets: [
-      {
-        type: String,
-      },
-    ],
+    profileSnapshot: { type: mongoose.Schema.Types.Mixed, required: true },
+    policyVersion: { type: Number, required: true },
+    recommendations: [{
+      schemeId: { type: mongoose.Schema.Types.ObjectId, ref: 'GovernmentScheme', required: true },
+      matchPercentage: { type: Number, required: true, min: 0, max: 100 },
+      eligibilityStatus: { type: String, enum: ['Eligible', 'Partially Eligible', 'Not Eligible'], required: true },
+      score: { type: Number, required: true },
+      reasons: { type: [String], default: [] },
+      missingDocuments: { type: [String], default: [] },
+    }],
   },
   {
     timestamps: true,
   }
 );
+
+RecommendationSchema.index({ userId: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Recommendation', RecommendationSchema);

@@ -107,7 +107,7 @@ class SchemesListNotifier extends StateNotifier<SchemesState> {
     try {
       List<GovernmentSchemeEntity> results = [];
       if (query.trim().isNotEmpty) {
-        results = await repository.searchSchemes(query);
+        results = await repository.searchSchemes(query, page: refresh ? 1 : state.page, pageSize: 20, filter: filter, sort: sort);
       } else {
         results = await repository.getSchemes(
           page: refresh ? 1 : state.page,

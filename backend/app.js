@@ -55,6 +55,15 @@ app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/bookmarks', bookmarkRoutes);
 app.use('/api/v1/recommendations', recommendationRoutes);
 
+// Compatibility endpoints for mobile clients that use the unversioned Phase 3 contract.
+app.use('/api/schemes', schemeRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/eligibility', eligibilityRoutes);
+app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/pdf', pdfRoutes);
+app.use('/api/checklist', checklistRoutes);
+
 // Global Error Handler
 app.use(errorHandler);
 

@@ -9,11 +9,14 @@ import '../../../core/di/injection_container.dart';
 
 import '../../common_widgets/app_bottom_navigation.dart';
 import '../../common_widgets/app_empty_state_widget.dart';
+import '../../common_widgets/app_error_widget.dart';
 import '../../common_widgets/app_top_bar.dart';
 import '../schemes/scheme_details_screen.dart';
 import '../schemes/widgets/scheme_card_widget.dart';
+import '../../providers/scheme_providers.dart';
 
 final bookmarkedSchemesListProvider = FutureProvider<List<GovernmentSchemeEntity>>((ref) async {
+  ref.watch(bookmarkNotifierProvider);
   final repo = sl<BookmarkRepository>();
   return await repo.getBookmarkedSchemes();
 });
@@ -59,7 +62,10 @@ class BookmarksScreen extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text('Error loading bookmarks: $err')),
+          error: (err, stack) => AppErrorWidget(
+            errorMessage: 'Unable to load your saved schemes. Please try again.',
+            onRetry: () => ref.invalidate(bookmarkedSchemesListProvider),
+          ),
         ),
       ),
     );

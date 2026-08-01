@@ -1,8 +1,10 @@
 const express = require('express');
-const router = express.Router();
 const SchemeController = require('../controllers/SchemeController');
-
-router.get('/', SchemeController.getAllSchemes);
-router.get('/:id', SchemeController.getSchemeById);
-
+const router = express.Router();
+router.get('/search', SchemeController.search);
+router.get('/categories', SchemeController.getCategories);
+router.get('/featured', SchemeController.featured);
+router.get('/latest', SchemeController.latest);
+router.get('/', SchemeController.list);
+router.get('/:id', SchemeController.getById);
 module.exports = router;

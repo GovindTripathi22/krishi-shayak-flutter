@@ -13,5 +13,5 @@ abstract class GovernmentSchemeRepository {
   Future<List<GovernmentSchemeEntity>> getFeaturedSchemes();
   Future<List<GovernmentSchemeEntity>> getLatestSchemes();
   Future<GovernmentSchemeEntity?> getSchemeById(String id);
-  Future<List<GovernmentSchemeEntity>> searchSchemes(String query);
+  Future<List<GovernmentSchemeEntity>> searchSchemes(String query, {int page = 1, int pageSize = 20, SchemeFilterParams? filter, SchemeSortOption sort = SchemeSortOption.newest});
 }

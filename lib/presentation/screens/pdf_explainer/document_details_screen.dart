@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/localization/app_localizations_provider.dart';
 import '../../../core/services/voice/voice_service.dart';
 import '../../../domain/entities/parsed_document_entity.dart';
 import '../../../domain/entities/smart_highlight_entity.dart';
@@ -19,7 +20,8 @@ class DocumentDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final voiceState = ref.watch(voiceStateProvider);
+    final voiceModel = ref.watch(voiceServiceProvider);
+    final isSpeaking = voiceModel.state == VoiceState.speaking;
 
     return Scaffold(
       appBar: AppTopBar(
@@ -27,15 +29,19 @@ class DocumentDetailsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(
-              voiceState == VoiceState.speaking ? Icons.volume_up_rounded : Icons.volume_mute_rounded,
+              isSpeaking ? Icons.volume_up_rounded : Icons.volume_mute_rounded,
               color: AppColors.primary,
             ),
-            tooltip: 'Listen to Summary',
+            tooltip: isSpeaking ? 'Stop reading' : 'Listen to Summary',
             onPressed: () {
-              if (voiceState == VoiceState.speaking) {
-                ref.read(voiceStateProvider.notifier).stopSpeech();
+              final langCode = ref.read(localeProvider).languageCode;
+              if (isSpeaking) {
+                ref.read(voiceServiceProvider.notifier).stopSpeech();
               } else {
-                ref.read(voiceStateProvider.notifier).speak(document.simpleSummary);
+                ref.read(voiceServiceProvider.notifier).speakPdfSummary(
+                  document.simpleSummary,
+                  languageCode: langCode,
+                );
               }
             },
           ),

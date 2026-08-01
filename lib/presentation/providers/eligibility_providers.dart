@@ -86,12 +86,8 @@ class EligibilityEvaluationNotifier extends StateNotifier<EligibilityState> {
   Future<void> runEvaluation(EligibilityInputParams input) async {
     state = state.copyWith(isEvaluating: true, errorMessage: null);
 
-    // Simulate AI rule evaluation calculation
-    await Future.delayed(const Duration(milliseconds: 1200));
-
     try {
       final results = await repository.evaluateEligibility(input);
-      await repository.saveCheckHistory(input, results);
 
       state = state.copyWith(
         results: results,

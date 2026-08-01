@@ -1,433 +1,63 @@
+import '../../core/services/backend/api_client.dart';
+import '../../domain/entities/scheme_filter_params.dart';
+import '../../domain/entities/scheme_sort_option.dart';
 import '../models/government_scheme_model.dart';
-import '../../domain/entities/scheme_faq.dart';
 
 abstract class SchemeRemoteDataSource {
-  Future<List<GovernmentSchemeModel>> getSchemes();
+  Future<List<GovernmentSchemeModel>> getSchemes({int page, int pageSize, SchemeFilterParams? filter, SchemeSortOption sort});
+  Future<List<GovernmentSchemeModel>> searchSchemes(String query, {int page, int pageSize, SchemeFilterParams? filter, SchemeSortOption sort});
+  Future<GovernmentSchemeModel?> getSchemeById(String id);
+  Future<List<GovernmentSchemeModel>> getFeaturedSchemes();
+  Future<List<GovernmentSchemeModel>> getLatestSchemes();
 }
 
 class SchemeRemoteDataSourceImpl implements SchemeRemoteDataSource {
-  @override
-  Future<List<GovernmentSchemeModel>> getSchemes() async {
-    final now = DateTime.now();
-    return [
-      GovernmentSchemeModel(
-        id: 'gov_sch_101',
-        name: 'PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)',
-        shortDescription: 'Direct income support of ₹6,000 per year in 3 equal installments to eligible farmer families across India.',
-        detailedDescription: 'Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) is a Central Sector scheme with 100% funding from the Government of India. Under the scheme, an income support of 6,000/- per year in three equal installments of 2,000/- each is provided to all landholding farmer families across the country.',
-        benefits: '₹6,000 per year credited directly into Aadhaar-seeded bank accounts in 3 equal installments of ₹2,000 every 4 months.',
-        financialAssistance: '100% Direct Benefit Transfer (DBT)',
-        eligibilityCriteria: const [
-          'All landholding farmer families holding cultivable land in their names.',
-          'Must possess valid Aadhaar card linked with active bank account.',
-          'State/UT government identification of eligible families.',
-        ],
-        requiredDocuments: const [
-          'Aadhaar Card',
-          'Landholding documents / Khatian / 7/12 extract',
-          'Active Bank Account Passbook',
-          'Mobile Number linked with Aadhaar',
-        ],
-        deadline: 'Ongoing Scheme (No Expiry)',
-        startDate: '2018-12-01',
-        endDate: '2030-12-31',
-        officialWebsite: 'https://pmkisan.gov.in',
-        officialApplicationLink: 'https://pmkisan.gov.in/RegistrationFormNew.aspx',
-        category: 'Financial Assistance',
-        isCentralScheme: true,
-        applicableStates: const ['All India', 'Maharashtra', 'Uttar Pradesh', 'Gujarat', 'Punjab', 'Tamil Nadu', 'Karnataka', 'Telangana'],
-        applicableDistricts: const ['All Districts'],
-        applicableCrops: const ['All Crops', 'Wheat', 'Paddy', 'Cotton', 'Sugarcane', 'Pulses'],
-        landRequirement: 'Cultivable land in farmer\'s name',
-        incomeRequirement: 'Non-taxpayer, Non-institutional landholder',
-        farmerCategory: 'Small / Marginal / All Farmers',
-        genderRestrictions: 'None',
-        ageRequirement: '18+ Years',
-        importantNotes: const [
-          'e-KYC is mandatory for all registered PM-KISAN farmers.',
-          'Land verification must be completed by local Revenue Officer.',
-        ],
-        faqs: const [
-          SchemeFaq(
-            question: 'How is the PM-KISAN payment transferred?',
-            answer: 'Payments are transferred directly into the beneficiary\'s Aadhaar-linked bank account via DBT.',
-          ),
-          SchemeFaq(
-            question: 'Is there any registration fee for PM-KISAN?',
-            answer: 'No, self-registration on the official PM-KISAN portal or CSC center is free or nominal.',
-          ),
-        ],
-        lastUpdatedDate: now,
-        createdDate: DateTime(2018, 12, 1),
-        status: 'Active',
-        isFeatured: true,
-        priorityScore: 100,
-        languageVersions: const {
-          'en': 'PM-KISAN Scheme',
-          'hi': 'प्रधानमंत्री किसान सम्मान निधि योजना',
-          'mr': 'पीएम-किसान सन्मान निधी योजना',
-        },
-      ),
-      GovernmentSchemeModel(
-        id: 'gov_sch_102',
-        name: 'PM Fasal Bima Yojana (PMFBY)',
-        shortDescription: 'Comprehensive crop insurance coverage against non-preventable natural risks from pre-sowing to post-harvest.',
-        detailedDescription: 'Pradhan Mantri Fasal Bima Yojana (PMFBY) aims to provide financial support to farmers suffering crop loss/damage arising out of un-foreseen events, stabilizing their income and ensuring flow of credit to agriculture.',
-        benefits: 'Provides full financial compensation against crop failure due to drought, flood, unseasonal rain, pest infestation, and landslide.',
-        financialAssistance: 'Up to 90% premium subsidy shared between Central and State Governments.',
-        eligibilityCriteria: const [
-          'All farmers growing notified crops in notified areas including sharecroppers and tenant farmers.',
-          'Both loanee and non-loanee farmers are eligible.',
-        ],
-        requiredDocuments: const [
-          'Land Ownership Certificate / Crop Sowing Certificate',
-          'Aadhaar Card',
-          'Bank Account Details',
-          'Sowing Certificate issued by Patwari / Sarpanch',
-        ],
-        deadline: '31st July for Kharif / 31st December for Rabi',
-        startDate: '2016-02-18',
-        endDate: '2030-12-31',
-        officialWebsite: 'https://pmfby.gov.in',
-        officialApplicationLink: 'https://pmfby.gov.in/farmerRegistrationForm',
-        category: 'Crop Insurance',
-        isCentralScheme: true,
-        applicableStates: const ['All India', 'Maharashtra', 'Gujarat', 'Uttar Pradesh', 'Rajasthan', 'Madhya Pradesh'],
-        applicableDistricts: const ['All Districts'],
-        applicableCrops: const ['Rice', 'Wheat', 'Cotton', 'Soybean', 'Groundnut', 'Onion', 'Pulses'],
-        landRequirement: 'Own or Leased Agricultural Land',
-        incomeRequirement: 'No Income Limit',
-        farmerCategory: 'All Farmers (Loanee & Non-Loanee)',
-        genderRestrictions: 'None',
-        ageRequirement: '18+ Years',
-        importantNotes: const [
-          'Crop loss must be reported within 72 hours of damage occurrence.',
-          'Farmer premium is capped at 1.5% for Rabi, 2% for Kharif, and 5% for Annual Commercial Crops.',
-        ],
-        faqs: const [
-          SchemeFaq(
-            question: 'What is the maximum timeline to claim crop loss?',
-            answer: 'Intimation of crop damage must be logged within 72 hours via PMFBY App or Toll-Free number 1800-180-1551.',
-          ),
-        ],
-        lastUpdatedDate: now,
-        createdDate: DateTime(2016, 2, 18),
-        status: 'Active',
-        isFeatured: true,
-        priorityScore: 95,
-        languageVersions: const {
-          'en': 'PM Fasal Bima Yojana',
-          'hi': 'प्रधानमंत्री फसल बीमा योजना',
-          'mr': 'पंतप्रधान पीक विमा योजना',
-        },
-      ),
-      GovernmentSchemeModel(
-        id: 'gov_sch_103',
-        name: 'Kisan Credit Card (KCC) Scheme',
-        shortDescription: 'Concessional short-term agricultural credit up to ₹3 Lakh at an effective interest rate of just 4% per annum.',
-        detailedDescription: 'The Kisan Credit Card (KCC) scheme was introduced to provide adequate and timely credit support from the banking system under a single window to the farmers for their cultivation and other needs.',
-        benefits: 'Credit limit up to ₹3 Lakh without collateral requirement. Interest rate reduced to 4% p.a. upon prompt repayment.',
-        financialAssistance: '3% Prompt Repayment Incentive (PRI) + 2% Interest Subvention.',
-        eligibilityCriteria: const [
-          'Individual / Joint borrowers who are owner cultivators.',
-          'Tenant farmers, oral lessees, and sharecroppers.',
-          'Self Help Groups (SHGs) or Joint Liability Groups (JLGs) of farmers.',
-        ],
-        requiredDocuments: const [
-          'KCC Application Form',
-          'Identity Proof (Voter ID / Aadhaar / Driving License)',
-          'Address Proof',
-          'Land Revenue Record / 7/12 Extract',
-        ],
-        deadline: 'Open Throughout Year',
-        startDate: '1998-08-01',
-        endDate: '2030-12-31',
-        officialWebsite: 'https://myscheme.gov.in',
-        officialApplicationLink: 'https://pmkisan.gov.in/KCC.aspx',
-        category: 'Agricultural Credit',
-        isCentralScheme: true,
-        applicableStates: const ['All India'],
-        applicableDistricts: const ['All Districts'],
-        applicableCrops: const ['All Crops', 'Horticulture', 'Fisheries', 'Animal Husbandry'],
-        landRequirement: 'Cultivable land or animal husbandry setup',
-        incomeRequirement: 'No Limit',
-        farmerCategory: 'Small, Marginal & All Farmers',
-        genderRestrictions: 'None',
-        ageRequirement: '18 to 75 Years',
-        importantNotes: const [
-          'No collateral security required for KCC loans up to ₹1.60 Lakh.',
-        ],
-        faqs: const [
-          SchemeFaq(
-            question: 'What is the interest rate for KCC loan?',
-            answer: 'Effective interest rate is 4% per annum if repaid promptly within 1 year.',
-          ),
-        ],
-        lastUpdatedDate: now,
-        createdDate: DateTime(1998, 8, 1),
-        status: 'Active',
-        isFeatured: true,
-        priorityScore: 90,
-        languageVersions: const {
-          'en': 'Kisan Credit Card',
-          'hi': 'किसान क्रेडिट कार्ड योजना',
-        },
-      ),
-      GovernmentSchemeModel(
-        id: 'gov_sch_104',
-        name: 'PM Krishi Sinchayee Yojana (Per Drop More Crop)',
-        shortDescription: 'Financial subsidy up to 80% for installing Micro Irrigation systems (Drip and Sprinkler irrigation).',
-        detailedDescription: 'Per Drop More Crop (PDMC) component of Pradhan Mantri Krishi Sinchayee Yojana focuses on enhancing water use efficiency at farm level through Micro Irrigation technologies i.e. Drip and Sprinkler Irrigation systems.',
-        benefits: '55% subsidy for Small & Marginal farmers and 45% for Other farmers for installing drip & sprinkler irrigation units.',
-        financialAssistance: 'Up to 80% total financial subsidy (combined Central & State bonus).',
-        eligibilityCriteria: const [
-          'Farmers owning agricultural land with a reliable water source (borewell, open well, pond).',
-          'Preference given to Small and Marginal farmers and Women farmers.',
-        ],
-        requiredDocuments: const [
-          'Aadhaar Card',
-          'Land 7/12 Extract and 8A Extract',
-          'Bank Passbook Copy',
-          'Water Source Availability Certificate',
-          'Quotation from Authorized Micro Irrigation Dealer',
-        ],
-        deadline: '31st March Annually',
-        startDate: '2015-07-01',
-        endDate: '2028-03-31',
-        officialWebsite: 'https://pmksy.gov.in',
-        officialApplicationLink: 'https://mahadbt.maharashtra.gov.in',
-        category: 'Irrigation & Water',
-        isCentralScheme: false,
-        applicableStates: const ['Maharashtra', 'Gujarat', 'Karnataka', 'Tamil Nadu', 'Andhra Pradesh', 'Madhya Pradesh'],
-        applicableDistricts: const ['All Districts'],
-        applicableCrops: const ['Sugarcane', 'Cotton', 'Grapes', 'Pomegranate', 'Banana', 'Vegetables'],
-        landRequirement: 'Minimum 0.2 Hectares',
-        incomeRequirement: 'No Limit',
-        farmerCategory: 'Small, Marginal & Women Farmers',
-        genderRestrictions: 'None',
-        ageRequirement: '18+ Years',
-        importantNotes: const [
-          'Equipment must be purchased from Government empaneled suppliers to claim subsidy.',
-        ],
-        faqs: const [
-          SchemeFaq(
-            question: 'How much drip subsidy do small farmers get in Maharashtra?',
-            answer: 'Small and marginal farmers receive up to 80% subsidy combining PMKSY and Chief Minister Sustainable Agriculture Irrigation Scheme.',
-          ),
-        ],
-        lastUpdatedDate: now,
-        createdDate: DateTime(2015, 7, 1),
-        status: 'Active',
-        isFeatured: false,
-        priorityScore: 85,
-        languageVersions: const {
-          'en': 'PM Krishi Sinchayee Yojana',
-          'hi': 'प्रधानमंत्री कृषि सिंचाई योजना',
-        },
-      ),
-      GovernmentSchemeModel(
-        id: 'gov_sch_105',
-        name: 'Sub-Mission on Agricultural Mechanization (SMAM)',
-        shortDescription: 'Financial subsidy of 40% to 80% for purchasing tractors, rotavators, harvesters and establishing Custom Hiring Centres.',
-        detailedDescription: 'SMAM provides financial assistance to farmers for purchasing agricultural machinery and equipment to increase farm power availability and promote custom hiring of farm machinery.',
-        benefits: 'Up to 50% subsidy on individual farm machinery and up to 80% subsidy for setting up Custom Hiring Centres (CHCs).',
-        financialAssistance: 'Direct Benefit Transfer up to 50%-80% of equipment cost.',
-        eligibilityCriteria: const [
-          'All categories of farmers, SC/ST, Women and Small/Marginal farmers.',
-          'Registered farmer group / SHGs for Custom Hiring Centre subsidies.',
-        ],
-        requiredDocuments: const [
-          'Aadhaar Card',
-          'Land Ownership Proof / 7/12 Extract',
-          'Bank Account Passbook',
-          'Quotation of Equipment from Authorized Dealer',
-        ],
-        deadline: '31st December',
-        startDate: '2014-04-01',
-        endDate: '2030-12-31',
-        officialWebsite: 'https://agrimachinery.nic.in',
-        officialApplicationLink: 'https://agrimachinery.nic.in/Index/farmerRegistration',
-        category: 'Machinery Subsidy',
-        isCentralScheme: true,
-        applicableStates: const ['All India', 'Maharashtra', 'Punjab', 'Haryana', 'Uttar Pradesh', 'Madhya Pradesh'],
-        applicableDistricts: const ['All Districts'],
-        applicableCrops: const ['All Crops', 'Wheat', 'Paddy', 'Sugarcane'],
-        landRequirement: 'Agricultural Landholder',
-        incomeRequirement: 'No Limit',
-        farmerCategory: 'All Farmers (Priority to Small & SC/ST)',
-        genderRestrictions: 'None',
-        ageRequirement: '18+ Years',
-        importantNotes: const [
-          'Machines must carry BIS certificate or FMTTI test report.',
-        ],
-        faqs: const [
-          SchemeFaq(
-            question: 'What is the maximum subsidy on tractors under SMAM?',
-            answer: 'Subsidies up to ₹1.25 Lakh to ₹2.00 Lakh are available depending on engine horsepower and farmer category.',
-          ),
-        ],
-        lastUpdatedDate: now,
-        createdDate: DateTime(2014, 4, 1),
-        status: 'Active',
-        isFeatured: true,
-        priorityScore: 88,
-        languageVersions: const {
-          'en': 'SMAM Machinery Subsidy',
-          'hi': 'कृषि यांत्रिकीकरण उपमिशन',
-        },
-      ),
-      GovernmentSchemeModel(
-        id: 'gov_sch_106',
-        name: 'Namo Shetkari Mahasanman Nidhi Yojana (Maharashtra)',
-        shortDescription: 'Additional state income support of ₹6,000 per year supplementing PM-KISAN, bringing total farmer benefit to ₹12,000/year.',
-        detailedDescription: 'Under the Namo Shetkari Mahasanman Nidhi Scheme of the Maharashtra State Government, registered PM-KISAN beneficiaries in Maharashtra receive an extra ₹6,000 annually in 3 installments.',
-        benefits: 'Additional ₹6,000 per year transferred directly into bank accounts of Maharashtra farmers (Total ₹12,000/year with PM-KISAN).',
-        financialAssistance: '100% State Direct Benefit Transfer (DBT)',
-        eligibilityCriteria: const [
-          'Farmer must be an active beneficiary of the PM-KISAN scheme in Maharashtra.',
-          'Must hold cultivable land registered in Maharashtra revenue records.',
-        ],
-        requiredDocuments: const [
-          'PM-KISAN Registration ID',
-          'Aadhaar Card',
-          'Bank Account Passbook (Aadhaar Seeded)',
-          '7/12 & 8A Land Extract',
-        ],
-        deadline: 'Ongoing Scheme',
-        startDate: '2023-05-30',
-        endDate: '2030-12-31',
-        officialWebsite: 'https://nsmny.maharashtra.gov.in',
-        officialApplicationLink: 'https://nsmny.maharashtra.gov.in',
-        category: 'Financial Assistance',
-        isCentralScheme: false,
-        applicableStates: const ['Maharashtra'],
-        applicableDistricts: const ['All Districts in Maharashtra'],
-        applicableCrops: const ['All Crops'],
-        landRequirement: 'Registered PM-KISAN Landholder in MH',
-        incomeRequirement: 'Non-taxpayer',
-        farmerCategory: 'Small / Marginal / All Farmers',
-        genderRestrictions: 'None',
-        ageRequirement: '18+ Years',
-        importantNotes: const [
-          'No separate registration needed if PM-KISAN land eKYC is completed.',
-        ],
-        faqs: const [
-          SchemeFaq(
-            question: 'Do I need to apply separately for Namo Shetkari Scheme?',
-            answer: 'If your PM-KISAN account in Maharashtra is active and eKYC completed, benefits are transferred automatically.',
-          ),
-        ],
-        lastUpdatedDate: now,
-        createdDate: DateTime(2023, 5, 30),
-        status: 'Active',
-        isFeatured: true,
-        priorityScore: 92,
-        languageVersions: const {
-          'en': 'Namo Shetkari Scheme',
-          'mr': 'नमो शेतकरी महासन्मान निधी योजना',
-        },
-      ),
-      GovernmentSchemeModel(
-        id: 'gov_sch_107',
-        name: 'Paramparagat Krishi Vikas Yojana (PKVY)',
-        shortDescription: 'Financial assistance of ₹50,000 per hectare for organic farming, certification, processing and marketing.',
-        detailedDescription: 'PKVY promotes organic farming through adoption of organic village clusters, PGS certification, training and financial support for organic inputs.',
-        benefits: '₹50,000 per hectare financial support over 3 years, of which ₹31,000 is given directly for organic inputs (seeds, bio-fertilizers, vermicompost).',
-        financialAssistance: 'Direct Benefit Transfer for Organic Input Procurement.',
-        eligibilityCriteria: const [
-          'Farmers forming clusters of 50 or more farmers having 50 acres land.',
-          'Individual farmers adopting PGS-India organic certification.',
-        ],
-        requiredDocuments: const [
-          'Aadhaar Card',
-          'Land Ownership Extract (7/12)',
-          'Bank Account Passbook',
-          'Cluster Membership Undertaking',
-        ],
-        deadline: '31st March',
-        startDate: '2015-04-01',
-        endDate: '2028-03-31',
-        officialWebsite: 'https://pgsindia-ncof.gov.in',
-        officialApplicationLink: 'https://pgsindia-ncof.gov.in/pkvy/index.aspx',
-        category: 'Organic Farming',
-        isCentralScheme: true,
-        applicableStates: const ['All India', 'Maharashtra', 'Uttarakhand', 'Sikkim', 'Madhya Pradesh', 'Karnataka'],
-        applicableDistricts: const ['All Districts'],
-        applicableCrops: const ['Organic Cotton', 'Pulses', 'Spices', 'Organic Wheat', 'Horticulture'],
-        landRequirement: 'Minimum 1 Acre for Cluster Participation',
-        incomeRequirement: 'No Limit',
-        farmerCategory: 'All Farmers',
-        genderRestrictions: 'None',
-        ageRequirement: '18+ Years',
-        importantNotes: const [
-          'PGS-India Local Group certification is mandatory for cluster funding.',
-        ],
-        faqs: const [
-          SchemeFaq(
-            question: 'How much direct assistance is provided for organic inputs?',
-            answer: '₹31,000 per hectare is transferred directly for purchasing bio-fertilizers, seeds and compost.',
-          ),
-        ],
-        lastUpdatedDate: now,
-        createdDate: DateTime(2015, 4, 1),
-        status: 'Active',
-        isFeatured: false,
-        priorityScore: 82,
-        languageVersions: const {
-          'en': 'PKVY Organic Farming',
-          'hi': 'परंपरागत कृषि विकास योजना',
-        },
-      ),
-      GovernmentSchemeModel(
-        id: 'gov_sch_108',
-        name: 'Agriculture Infrastructure Fund (AIF)',
-        shortDescription: 'Medium-long term debt financing facility up to ₹2 Crore with 3% interest subvention for post-harvest infrastructure.',
-        detailedDescription: 'AIF provides debt financing for investment in viable projects for post-harvest management infrastructure and community farming assets.',
-        benefits: '3% per annum interest subvention up to ₹2 Crore for maximum 7 years + Credit guarantee coverage under CGTMSE.',
-        financialAssistance: '3% Interest Subvention + Credit Guarantee Scheme.',
-        eligibilityCriteria: const [
-          'Primary Agricultural Credit Societies (PACS), Marketing Cooperative Societies, Farmers Producer Organizations (FPOs), SHGs, Agri-entrepreneurs.',
-        ],
-        requiredDocuments: const [
-          'Project DPR (Detailed Project Report)',
-          'KYC Documents (Aadhaar & PAN)',
-          'Bank Account Statements (1 Year)',
-          'Land Lease / Ownership Deed for Cold Storage / Warehouse',
-        ],
-        deadline: 'Scheme active till FY 2032-33',
-        startDate: '2020-07-08',
-        endDate: '2033-03-31',
-        officialWebsite: 'https://agriinfra.gov.in',
-        officialApplicationLink: 'https://agriinfra.gov.in/Home/BeneficiaryRegistration',
-        category: 'Agri Credit',
-        isCentralScheme: true,
-        applicableStates: const ['All India'],
-        applicableDistricts: const ['All Districts'],
-        applicableCrops: const ['All Fruits', 'Vegetables', 'Grains', 'Cold Chain', 'Processing'],
-        landRequirement: 'Land for Cold Storage / Sorting Facility',
-        incomeRequirement: 'Agri-Entrepreneur / FPO',
-        farmerCategory: 'FPOs, SHGs & Agri-Entrepreneurs',
-        genderRestrictions: 'None',
-        ageRequirement: '18+ Years',
-        importantNotes: const [
-          'Projects sanctioned through AIF portal receive fast-track bank approval.',
-        ],
-        faqs: const [
-          SchemeFaq(
-            question: 'What infrastructure can be set up under AIF?',
-            answer: 'Warehouses, cold storages, sorting/grading units, solar agriculture pumps, and primary processing centers.',
-          ),
-        ],
-        lastUpdatedDate: now,
-        createdDate: DateTime(2020, 7, 8),
-        status: 'Active',
-        isFeatured: false,
-        priorityScore: 80,
-        languageVersions: const {
-          'en': 'Agriculture Infrastructure Fund',
-          'hi': 'कृषि इंफ्रास्ट्रक्चर फंड',
-        },
-      ),
-    ];
+  final ApiClient _apiClient;
+  SchemeRemoteDataSourceImpl({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+
+  Map<String, String> _parameters({int page = 1, int pageSize = 20, SchemeFilterParams? filter, SchemeSortOption sort = SchemeSortOption.newest}) {
+    final values = <String, String>{'page': '$page', 'limit': '$pageSize', 'sort': _sortValue(sort)};
+    if (filter?.state?.isNotEmpty == true) values['state'] = filter!.state!;
+    if (filter?.district?.isNotEmpty == true) values['district'] = filter!.district!;
+    if (filter?.crop?.isNotEmpty == true) values['crop'] = filter!.crop!;
+    if (filter?.category?.isNotEmpty == true && filter!.category != 'All') values['category'] = filter.category!;
+    if (filter?.isCentralScheme != null) values['isCentralScheme'] = '${filter!.isCentralScheme}';
+    return values;
   }
+
+  String _sortValue(SchemeSortOption sort) => switch (sort) {
+        SchemeSortOption.newest => 'newest',
+        SchemeSortOption.popular => 'popular',
+        SchemeSortOption.recentlyUpdated => 'updated',
+        SchemeSortOption.highestBenefits => 'benefits',
+        SchemeSortOption.deadlineSoon => 'deadline',
+        SchemeSortOption.alphabetical => 'alphabetical',
+      };
+
+  String _path(String path, Map<String, String> parameters) => Uri(path: path, queryParameters: parameters).toString();
+  List<GovernmentSchemeModel> _list(dynamic response) {
+    final body = response as Map<String, dynamic>;
+    return (body['data'] as List<dynamic>? ?? []).map((item) => GovernmentSchemeModel.fromJson(Map<String, dynamic>.from(item as Map))).toList();
+  }
+
+  @override
+  Future<List<GovernmentSchemeModel>> getSchemes({int page = 1, int pageSize = 20, SchemeFilterParams? filter, SchemeSortOption sort = SchemeSortOption.newest}) async => _list(await _apiClient.get(_path('/schemes', _parameters(page: page, pageSize: pageSize, filter: filter, sort: sort)), requireAuth: false));
+
+  @override
+  Future<List<GovernmentSchemeModel>> searchSchemes(String query, {int page = 1, int pageSize = 20, SchemeFilterParams? filter, SchemeSortOption sort = SchemeSortOption.newest}) async {
+    final parameters = _parameters(page: page, pageSize: pageSize, filter: filter, sort: sort)..['q'] = query.trim();
+    return _list(await _apiClient.get(_path('/schemes/search', parameters), requireAuth: false));
+  }
+
+  @override
+  Future<GovernmentSchemeModel?> getSchemeById(String id) async {
+    final response = await _apiClient.get('/schemes/$id', requireAuth: false) as Map<String, dynamic>;
+    final data = response['data'];
+    return data == null ? null : GovernmentSchemeModel.fromJson(Map<String, dynamic>.from(data as Map));
+  }
+
+  @override
+  Future<List<GovernmentSchemeModel>> getFeaturedSchemes() async => _list(await _apiClient.get('/schemes/featured?limit=20', requireAuth: false));
+  @override
+  Future<List<GovernmentSchemeModel>> getLatestSchemes() async => _list(await _apiClient.get('/schemes/latest?limit=10', requireAuth: false));
 }

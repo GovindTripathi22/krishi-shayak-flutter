@@ -75,6 +75,31 @@ class ApiClient {
     }
   }
 
+  Future<dynamic> delete(String endpoint, {bool requireAuth = true}) async {
+    final url = Uri.parse('$baseUrl$endpoint');
+    try {
+      final headers = await _getHeaders(requireAuth: requireAuth);
+      final response = await http.delete(url, headers: headers).timeout(const Duration(seconds: 15));
+      if (response.statusCode == 204) return null;
+      return _processResponse(response);
+    } catch (e, stack) {
+      AppLogger.error('ApiClient DELETE Error on $endpoint', e, stack);
+      rethrow;
+    }
+  }
+
+  Future<dynamic> uploadFile(String endpoint, {required String filePath, Map<String, String>? fields, bool requireAuth = true}) async {
+    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'));
+    final headers = await _getHeaders(requireAuth: requireAuth);
+    headers.remove('Content-Type');
+    request.headers.addAll(headers);
+    if (fields != null) request.fields.addAll(fields);
+    request.files.add(await http.MultipartFile.fromPath('file', filePath));
+    final streamed = await request.send().timeout(const Duration(seconds: 90));
+    final response = await http.Response.fromStream(streamed);
+    return _processResponse(response);
+  }
+
   dynamic _processResponse(http.Response response) {
     final body = jsonDecode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {

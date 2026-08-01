@@ -90,18 +90,7 @@ class DocumentProcessingNotifier extends StateNotifier<DocumentProcessingState> 
     required String fileType,
     required String fileSize,
   }) async {
-    state = state.copyWith(
-      isProcessing: true,
-      progress: 0.2,
-      statusMessage: 'Reading document & executing OCR text extraction...',
-      errorMessage: null,
-    );
-
-    await Future.delayed(const Duration(milliseconds: 600));
-    state = state.copyWith(
-      progress: 0.6,
-      statusMessage: 'AI Engine analyzing benefits, eligibility & deadlines...',
-    );
+    state = state.copyWith(isProcessing: true, progress: 0, statusMessage: 'Uploading document for secure processing...', errorMessage: null);
 
     try {
       final doc = await repository.processAndSaveDocument(
@@ -114,7 +103,7 @@ class DocumentProcessingNotifier extends StateNotifier<DocumentProcessingState> 
       state = state.copyWith(
         isProcessing: false,
         progress: 1.0,
-        statusMessage: 'Analysis complete!',
+        statusMessage: 'Analysis complete.',
         currentDocument: doc,
       );
 

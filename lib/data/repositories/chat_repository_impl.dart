@@ -1,7 +1,4 @@
-import 'dart:convert';
-
-import '../../core/logger/app_logger.dart';
-import '../../core/services/storage/preferences_service.dart';
+import '../../core/services/backend/api_client.dart';
 import '../../domain/entities/chat_conversation_entity.dart';
 import '../../domain/entities/chat_message_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
@@ -9,115 +6,33 @@ import '../models/chat_conversation_model.dart';
 import '../models/chat_message_model.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
-  static const String _keyConversations = 'pref_chat_conversations_v1';
-  static const String _keyMessagesPrefix = 'pref_chat_messages_';
-
+  final ApiClient _apiClient;
+  ChatRepositoryImpl({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
   @override
   Future<List<ChatConversationEntity>> getConversations() async {
-    try {
-      final rawStr = PreferencesService.getString(_keyConversations);
-      if (rawStr != null && rawStr.isNotEmpty) {
-        final List<dynamic> list = jsonDecode(rawStr);
-        return list.map((j) => ChatConversationModel.fromJson(j as Map<String, dynamic>)).toList();
-      }
-    } catch (e, stack) {
-      AppLogger.error('ChatRepositoryImpl: Error reading conversations', e, stack);
-    }
-
-    // Default Initial Conversation
-    final defaultConv = ChatConversationModel(
-      id: 'conv_default',
-      title: 'Agricultural Advisory Chat',
-      lastMessage: 'Namaste! How can I assist your farm today?',
-      updatedAt: DateTime.now(),
-    );
-    await _saveConversations([defaultConv]);
-    return [defaultConv];
+    final response = await _apiClient.get('/chat/history') as Map<String, dynamic>;
+    return (response['data'] as List<dynamic>? ?? []).map((item) { final data = Map<String, dynamic>.from(item as Map); return ChatConversationModel(id: data['conversationId'].toString(), title: data['title']?.toString() ?? 'Scheme assistance', lastMessage: data['lastMessage']?.toString() ?? '', updatedAt: DateTime.parse(data['updatedAt'].toString())); }).toList();
   }
-
   @override
-  Future<ChatConversationEntity> createConversation(String initialTitle) async {
-    final convs = await getConversations();
-    final newConv = ChatConversationModel(
-      id: 'conv_${DateTime.now().millisecondsSinceEpoch}',
-      title: initialTitle,
-      lastMessage: '',
-      updatedAt: DateTime.now(),
-    );
-
-    final updatedList = [newConv, ...convs];
-    await _saveConversations(updatedList.cast<ChatConversationModel>());
-    return newConv;
-  }
-
+  Future<ChatConversationEntity> createConversation(String initialTitle) async => ChatConversationModel(id: 'new_${DateTime.now().microsecondsSinceEpoch}', title: initialTitle, lastMessage: '', updatedAt: DateTime.now());
   @override
-  Future<void> deleteConversation(String conversationId) async {
-    final convs = await getConversations();
-    final updatedList = convs.where((c) => c.id != conversationId).toList();
-    await _saveConversations(updatedList.map((e) => ChatConversationModel(
-      id: e.id,
-      title: e.title,
-      lastMessage: e.lastMessage,
-      updatedAt: e.updatedAt,
-      isPinned: e.isPinned,
-    )).toList());
-    await PreferencesService.remove('$_keyMessagesPrefix$conversationId');
-  }
-
+  Future<void> deleteConversation(String conversationId) async { await _apiClient.delete('/chat/history?conversationId=$conversationId'); }
   @override
-  Future<void> renameConversation(String conversationId, String newTitle) async {
-    final convs = await getConversations();
-    final updatedList = convs.map((c) {
-      if (c.id == conversationId) {
-        return c.copyWith(title: newTitle);
-      }
-      return c;
-    }).toList();
-    await _saveConversations(updatedList.map((e) => ChatConversationModel(
-      id: e.id,
-      title: e.title,
-      lastMessage: e.lastMessage,
-      updatedAt: e.updatedAt,
-      isPinned: e.isPinned,
-    )).toList());
-  }
-
+  Future<void> renameConversation(String conversationId, String newTitle) async {}
   @override
   Future<List<ChatMessageEntity>> getMessages(String conversationId) async {
-    try {
-      final rawStr = PreferencesService.getString('$_keyMessagesPrefix$conversationId');
-      if (rawStr != null && rawStr.isNotEmpty) {
-        final List<dynamic> list = jsonDecode(rawStr);
-        return list.map((j) => ChatMessageModel.fromJson(j as Map<String, dynamic>)).toList();
-      }
-    } catch (e, stack) {
-      AppLogger.error('ChatRepositoryImpl: Error reading messages', e, stack);
-    }
-    return [];
+    final response = await _apiClient.post('/chat/history', body: {'conversationId': conversationId}) as Map<String, dynamic>;
+    final conversation = response['data']; if (conversation == null) return [];
+    return (conversation['messages'] as List<dynamic>? ?? []).map((item) { final data = Map<String, dynamic>.from(item as Map); return ChatMessageModel(id: data['id'].toString(), conversationId: conversationId, text: data['content'].toString(), isUser: data['role'] == 'user', timestamp: DateTime.parse(data['createdAt'].toString()), officialLinks: (data['officialLinks'] as List<dynamic>? ?? []).map((link) => link.toString()).toList()); }).toList();
   }
-
   @override
-  Future<void> saveMessage(ChatMessageEntity message) async {
-    final messages = await getMessages(message.conversationId);
-    final updatedList = [...messages, message];
-
-    final jsonStr = jsonEncode(updatedList.map((m) => ChatMessageModel(
-      id: m.id,
-      conversationId: m.conversationId,
-      text: m.text,
-      isUser: m.isUser,
-      timestamp: m.timestamp,
-      referencedSchemeNames: m.referencedSchemeNames,
-      officialLinks: m.officialLinks,
-      languageCode: m.languageCode,
-      isStreaming: m.isStreaming,
-    ).toJson()).toList());
-
-    await PreferencesService.setString('$_keyMessagesPrefix${message.conversationId}', jsonStr);
+  Future<ChatMessageEntity> sendMessage(String conversationId, String text, {String languageCode = 'en', String? schemeId, String? screenContext}) async {
+    final response = await _apiClient.post('/chat', body: {'message': text, 'conversationId': conversationId.startsWith('new_') ? null : conversationId, 'language': languageCode, if (schemeId != null) 'schemeId': schemeId, if (screenContext != null) 'screenContext': screenContext}) as Map<String, dynamic>;
+    final data = Map<String, dynamic>.from(response['data'] as Map);
+    return ChatMessageModel(id: data['messageId'].toString(), conversationId: data['conversationId'].toString(), text: data['answer'].toString(), isUser: false, timestamp: DateTime.now(), referencedSchemeNames: (data['referencedSchemes'] as List<dynamic>? ?? []).map((scheme) => (scheme as Map)['name'].toString()).toList(), officialLinks: (data['officialLinks'] as List<dynamic>? ?? []).map((link) => link.toString()).toList(), languageCode: languageCode);
   }
-
-  Future<void> _saveConversations(List<ChatConversationModel> list) async {
-    final jsonStr = jsonEncode(list.map((c) => c.toJson()).toList());
-    await PreferencesService.setString(_keyConversations, jsonStr);
-  }
+  @override
+  Future<List<String>> getSuggestions({String? schemeId, String? screenContext}) async { final response = await _apiClient.get('/chat/suggestions') as Map<String, dynamic>; return (response['data'] as List<dynamic>? ?? []).map((item) => item.toString()).toList(); }
+  @override
+  Future<void> saveMessage(ChatMessageEntity message) async {}
 }

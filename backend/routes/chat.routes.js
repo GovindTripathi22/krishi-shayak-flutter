@@ -1,8 +1,13 @@
 const express = require('express');
-const router = express.Router();
 const ChatController = require('../controllers/ChatController');
-
+const { protect } = require('../middleware/auth.middleware');
+const { chatLimiter } = require('../middleware/rate_limiter.middleware');
+const router = express.Router();
+router.use(protect, chatLimiter);
 router.post('/', ChatController.sendMessage);
-router.get('/history', ChatController.getChatHistory);
-
+router.post('/stream', ChatController.sendMessage);
+router.get('/history', ChatController.history);
+router.post('/history', ChatController.history);
+router.delete('/history', ChatController.deleteHistory);
+router.get('/suggestions', ChatController.getSuggestions);
 module.exports = router;

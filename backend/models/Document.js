@@ -27,10 +27,18 @@ const DocumentSchema = new mongoose.Schema(
     mimeType: {
       type: String,
     },
+    storagePath: { type: String, required: true, select: false },
+    contentHash: { type: String, required: true, index: true },
+    processingStatus: { type: String, enum: ['uploaded', 'processing', 'completed', 'failed'], default: 'uploaded', index: true },
+    language: { type: String, default: 'en' },
+    extractedTextPreview: { type: String, default: '' },
   },
   {
     timestamps: true,
   }
 );
+
+DocumentSchema.index({ userId: 1, contentHash: 1 });
+DocumentSchema.index({ userId: 1, fileName: 'text', extractedTextPreview: 'text', createdAt: -1 });
 
 module.exports = mongoose.model('Document', DocumentSchema);

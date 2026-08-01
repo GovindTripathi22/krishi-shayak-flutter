@@ -23,10 +23,14 @@ const OcrResultSchema = new mongoose.Schema(
     summaryText: {
       type: String,
     },
+    engine: { type: String, required: true },
+    status: { type: String, enum: ['completed', 'failed'], default: 'completed' },
   },
   {
     timestamps: true,
   }
 );
+
+OcrResultSchema.index({ documentId: 1 }, { unique: true });
 
 module.exports = mongoose.model('OcrResult', OcrResultSchema);

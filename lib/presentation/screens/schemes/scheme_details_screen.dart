@@ -12,8 +12,10 @@ import '../../../domain/repositories/government_scheme_repository.dart';
 import '../../common_widgets/app_button.dart';
 import '../../common_widgets/app_card.dart';
 import '../../common_widgets/app_dialog.dart';
+import '../../common_widgets/app_error_widget.dart';
 import '../../common_widgets/app_loading_indicator.dart';
 import '../../common_widgets/app_top_bar.dart';
+import '../ai_chat/ai_chat_screen.dart';
 import '../providers/scheme_providers.dart';
 
 final schemeDetailsProvider =
@@ -181,6 +183,24 @@ class SchemeDetailsScreen extends ConsumerWidget {
                   Text(scheme.detailedDescription, style: theme.textTheme.bodyLarge),
                   const SizedBox(height: 24.0),
 
+                  Text('Scheme Information', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8.0),
+                  AppCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Category: ${scheme.category}'),
+                        const SizedBox(height: 8.0),
+                        if (scheme.deadline.isNotEmpty) Text('Application deadline: ${scheme.deadline}'),
+                        if (scheme.deadline.isNotEmpty) const SizedBox(height: 8.0),
+                        Text('Applicable states: ${scheme.applicableStates.join(', ')}'),
+                        const SizedBox(height: 8.0),
+                        Text('Applicable crops: ${scheme.applicableCrops.join(', ')}'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
+
                   // Eligibility Checklist
                   Text('Eligibility Criteria', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8.0),
@@ -225,6 +245,24 @@ class SchemeDetailsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24.0),
 
+                  if (scheme.importantNotes.isNotEmpty) ...[
+                    Text('Important Notes', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8.0),
+                    AppCard(
+                      child: Column(
+                        children: scheme.importantNotes.map((note) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            const Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 20.0),
+                            const SizedBox(width: 10.0),
+                            Expanded(child: Text(note)),
+                          ]),
+                        )).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 24.0),
+                  ],
+
                   // FAQs Accordion
                   if (scheme.faqs.isNotEmpty) ...[
                     Text('Frequently Asked Questions (FAQs)', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
@@ -246,17 +284,27 @@ class SchemeDetailsScreen extends ConsumerWidget {
                   ],
 
                   // Official Action Buttons
-                  AppButton(
-                    text: 'Apply on Official Government Portal',
-                    icon: Icons.open_in_new_rounded,
-                    onPressed: () => _openOfficialPortal(context, scheme.officialApplicationLink, scheme.name),
-                  ),
+                  if (scheme.officialApplicationLink.isNotEmpty) ...[
+                    AppButton(
+                      text: 'Apply on Official Government Portal',
+                      icon: Icons.open_in_new_rounded,
+                      onPressed: () => _openOfficialPortal(context, scheme.officialApplicationLink, scheme.name),
+                    ),
+                    const SizedBox(height: 12.0),
+                  ],
+                  if (scheme.officialWebsite.isNotEmpty)
+                    AppButton(
+                      text: 'Visit Official Scheme Website',
+                      type: AppButtonType.outlined,
+                      icon: Icons.language_rounded,
+                      onPressed: () => _openOfficialPortal(context, scheme.officialWebsite, scheme.name),
+                    ),
                   const SizedBox(height: 12.0),
                   AppButton(
-                    text: 'Visit Official Scheme Website',
+                    text: 'Explain this scheme with AI',
                     type: AppButtonType.outlined,
-                    icon: Icons.language_rounded,
-                    onPressed: () => _openOfficialPortal(context, scheme.officialWebsite, scheme.name),
+                    icon: Icons.auto_awesome_outlined,
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => AiChatScreen(schemeId: scheme.id, initialQuestion: 'Explain this scheme, including benefits, eligibility, documents, deadline, and how to apply.'))),
                   ),
                   const SizedBox(height: 24.0),
                 ],
@@ -264,7 +312,10 @@ class SchemeDetailsScreen extends ConsumerWidget {
             );
           },
           loading: () => const AppLoadingIndicator(message: 'Loading scheme details...'),
-          error: (err, stack) => Center(child: Text('Error loading scheme: $err')),
+          error: (err, stack) => AppErrorWidget(
+            errorMessage: 'Unable to load this scheme. Check your connection and try again.',
+            onRetry: () => ref.invalidate(schemeDetailsProvider(schemeId)),
+          ),
         ),
       ),
     );

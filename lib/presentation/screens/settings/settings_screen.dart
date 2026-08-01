@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/localization/app_localizations_provider.dart';
 import '../../../core/routing/app_routes.dart';
 import '../../../core/theme/theme_provider.dart';
 
@@ -32,14 +33,28 @@ class SettingsScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(AppConstants.paddingMedium),
           children: [
             // Language Selection
-            AppCard(
-              child: ListTile(
-                leading: const Icon(Icons.language_rounded, color: AppColors.primary),
-                title: Text(loc.language, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                subtitle: Text('Current: ${loc.selectLanguage}'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => LanguageSelectorWidget.showLanguageModal(context),
-              ),
+            Consumer(
+              builder: (context, ref, _) {
+                final locale = ref.watch(localeProvider);
+                final langNames = {
+                  'en': 'English',
+                  'hi': 'हिन्दी (Hindi)',
+                  'mr': 'मराठी (Marathi)',
+                  'gu': 'ગુજરાતી (Gujarati)',
+                  'ta': 'தமிழ் (Tamil)',
+                  'te': 'తెలుగు (Telugu)',
+                  'kn': 'ಕನ್ನಡ (Kannada)',
+                };
+                return AppCard(
+                  child: ListTile(
+                    leading: const Icon(Icons.language_rounded, color: AppColors.primary),
+                    title: Text(loc.language, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    subtitle: Text('Current: ${langNames[locale.languageCode] ?? locale.languageCode}'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => LanguageSelectorWidget.showLanguageModal(context),
+                  ),
+                );
+              },
             ),
 
             // Theme Mode

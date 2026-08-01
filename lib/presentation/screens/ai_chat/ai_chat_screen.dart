@@ -3,230 +3,266 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/localization/app_localizations_provider.dart';
 import '../../../core/services/voice/voice_service.dart';
-import '../../common_widgets/app_card.dart';
 import '../../common_widgets/app_loading_indicator.dart';
 import '../../common_widgets/app_top_bar.dart';
 import '../providers/chat_providers.dart';
 
 class AiChatScreen extends ConsumerStatefulWidget {
-  const AiChatScreen({super.key});
+  final String? schemeId;
+  final String? initialQuestion;
+  const AiChatScreen({super.key, this.schemeId, this.initialQuestion});
 
   @override
   ConsumerState<AiChatScreen> createState() => _AiChatScreenState();
 }
 
 class _AiChatScreenState extends ConsumerState<AiChatScreen> {
-  final TextEditingController _messageController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+  final _controller = TextEditingController();
+  final _scroll = ScrollController();
 
   @override
   void dispose() {
-    _messageController.dispose();
-    _scrollController.dispose();
+    _controller.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
-  void _sendMessage() {
-    final text = _messageController.text.trim();
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialQuestion != null) {
+      WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _send(widget.initialQuestion));
+    }
+  }
+
+  void _send([String? value]) {
+    final text = (value ?? _controller.text).trim();
     if (text.isEmpty) return;
+    _controller.clear();
+    ref
+        .read(chatMessagesNotifierProvider.notifier)
+        .sendMessage(text, schemeId: widget.schemeId);
+  }
 
-    _messageController.clear();
-    ref.read(chatMessagesNotifierProvider.notifier).sendMessage(text);
+  void _startVoiceInput() {
+    final voiceNotifier = ref.read(voiceServiceProvider.notifier);
+    final currentLang = ref.read(localeProvider).languageCode;
 
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    voiceNotifier.startListening(
+      onResult: (text) {
+        _controller.text = text;
+        _send(text);
+      },
+      languageCode: currentLang,
+    );
+  }
+
+  void _speakLastResponse() {
+    final messages = ref.read(chatMessagesNotifierProvider).messages;
+    final lastAiMsg = messages.lastWhere(
+      (m) => !m.isUser,
+      orElse: () => messages.first,
+    );
+    final currentLang = ref.read(localeProvider).languageCode;
+    ref
+        .read(voiceServiceProvider.notifier)
+        .speakAiResponse(lastAiMsg.text, languageCode: currentLang);
   }
 
   @override
   Widget build(BuildContext context) {
+    final chatState = ref.watch(chatMessagesNotifierProvider);
+    final suggestions = ref.watch(chatSuggestionsProvider);
+    final voiceState = ref.watch(voiceServiceProvider);
     final theme = Theme.of(context);
-    final messages = ref.watch(chatMessagesNotifierProvider);
-    final isStreaming = ref.watch(chatStreamingStateProvider);
-    final voiceState = ref.watch(voiceStateProvider);
 
     return Scaffold(
       appBar: AppTopBar(
-        title: 'KrishiSahayak AI Advisor',
+        title: 'KrishiSahayak Assistant',
         actions: [
-          IconButton(
-            icon: Icon(
-              voiceState == VoiceState.speaking ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-              color: AppColors.primary,
+          if (chatState.messages.any((m) => !m.isUser))
+            IconButton(
+              icon: const Icon(Icons.volume_up_rounded),
+              tooltip: 'Read last response aloud',
+              onPressed: voiceState.state == VoiceState.speaking
+                  ? () => ref.read(voiceServiceProvider.notifier).stopSpeech()
+                  : _speakLastResponse,
             ),
-            onPressed: () {
-              if (messages.isNotEmpty) {
-                ref.read(voiceStateProvider.notifier).speak(messages.last.text);
-              }
-            },
-          ),
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
-            onPressed: () {
-              ref.read(chatMessagesNotifierProvider.notifier).clearHistory();
-            },
+            icon: const Icon(Icons.delete_outline, color: AppColors.primary),
+            onPressed: () =>
+                ref.read(chatMessagesNotifierProvider.notifier).clearHistory(),
           ),
-          const SizedBox(width: 8.0),
         ],
       ),
       body: SafeArea(
         child: Column(
           children: [
-            // Modern Hero Banner
-            Container(
-              margin: const EdgeInsets.all(AppConstants.paddingMedium),
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryDark],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            // Info Banner
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppConstants.paddingMedium, vertical: 8),
+              child: Text(
+                'Ask about official government schemes. Answers are based on retrieved scheme records.',
+                style: theme.textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ),
+
+            // Voice status indicator
+            if (voiceState.state == VoiceState.listening)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.red.shade200),
                 ),
-                borderRadius: BorderRadius.circular(20.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.2),
-                    blurRadius: 12.0,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 44.0,
-                    height: 44.0,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.mic_rounded,
+                        color: Colors.red, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      voiceState.recognizedText.isNotEmpty
+                          ? voiceState.recognizedText
+                          : 'Listening... Speak now',
+                      style: const TextStyle(color: Colors.red),
                     ),
-                    child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 26.0),
-                  ),
-                  const SizedBox(width: 12.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'KrishiSahayak AI Assistant',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          'Powered by Gemini RAG • 7 Indian Languages',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () =>
+                          ref.read(voiceServiceProvider.notifier).cancelListening(),
+                      child: const Icon(Icons.close, size: 16, color: Colors.red),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+
+            // Speaking indicator
+            if (voiceState.state == VoiceState.speaking)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.green.shade200),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.volume_up_rounded,
+                        color: Colors.green, size: 18),
+                    const SizedBox(width: 8),
+                    const Text('Reading response...',
+                        style: TextStyle(color: Colors.green)),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () =>
+                          ref.read(voiceServiceProvider.notifier).stopSpeech(),
+                      child:
+                          const Icon(Icons.stop, size: 16, color: Colors.green),
+                    ),
+                  ],
+                ),
+              ),
+
+            // Suggestion chips
+            suggestions.when(
+              data: (items) => SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.paddingMedium),
+                child: Row(
+                  children: items
+                      .map((item) => Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: ActionChip(
+                                label: Text(item),
+                                onPressed: () => _send(item)),
+                          ))
+                      .toList(),
+                ),
+              ),
+              loading: () => const SizedBox(),
+              error: (_, __) => const SizedBox(),
             ),
 
-            // Suggested Query Chips
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingMedium),
-              child: Row(
-                children: [
-                  _buildChip('💰 PM-KISAN Status', () {
-                    _messageController.text = 'Am I eligible for PM-KISAN scheme?';
-                    _sendMessage();
-                  }),
-                  const SizedBox(width: 8.0),
-                  _buildChip('🌧️ Crop Insurance', () {
-                    _messageController.text = 'How to claim PMFBY crop insurance in Kharif?';
-                    _sendMessage();
-                  }),
-                  const SizedBox(width: 8.0),
-                  _buildChip('🚜 Tractor Subsidy', () {
-                    _messageController.text = 'What is the SMAM tractor subsidy in Maharashtra?';
-                    _sendMessage();
-                  }),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10.0),
-
-            // Message List
+            // Chat messages
             Expanded(
               child: ListView.builder(
-                controller: _scrollController,
+                controller: _scroll,
                 padding: const EdgeInsets.all(AppConstants.paddingMedium),
-                itemCount: messages.length,
+                itemCount: chatState.messages.length,
                 itemBuilder: (context, index) {
-                  final msg = messages[index];
-                  final isUser = msg.isUser;
-
+                  final message = chatState.messages[index];
                   return Align(
-                    alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                    alignment: message.isUser
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
                     child: Container(
-                      margin: const EdgeInsets.only(bottom: 12.0),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(14),
                       constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.85,
-                      ),
-                      padding: const EdgeInsets.all(16.0),
+                          maxWidth: MediaQuery.of(context).size.width * 0.84),
                       decoration: BoxDecoration(
-                        color: isUser ? AppColors.primary : Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(20.0),
-                          topRight: const Radius.circular(20.0),
-                          bottomLeft: Radius.circular(isUser ? 20.0 : 4.0),
-                          bottomRight: Radius.circular(isUser ? 4.0 : 20.0),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
-                            blurRadius: 10.0,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                        border: isUser ? null : Border.all(color: AppColors.primaryContainer),
+                        color: message.isUser
+                            ? AppColors.primary
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: message.isUser
+                            ? null
+                            : Border.all(color: AppColors.primaryContainer),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (!isUser) ...[
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryContainer,
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: Text(
-                                    'Verified AI Advisory',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: AppColors.primaryDark,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8.0),
-                          ],
                           Text(
-                            msg.text,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: isUser ? Colors.white : AppColors.textPrimary,
-                              height: 1.4,
-                            ),
+                            message.text,
+                            style: TextStyle(
+                                color: message.isUser
+                                    ? Colors.white
+                                    : AppColors.textPrimary),
                           ),
+                          if (!message.isUser &&
+                              message.referencedSchemeNames.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                'Sources: ${message.referencedSchemeNames.join(', ')}',
+                                style: theme.textTheme.bodySmall
+                                    ?.copyWith(color: AppColors.primary),
+                              ),
+                            ),
+                          // TTS button on AI messages
+                          if (!message.isUser)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  final lang = ref
+                                      .read(localeProvider)
+                                      .languageCode;
+                                  ref
+                                      .read(voiceServiceProvider.notifier)
+                                      .speakAiResponse(message.text,
+                                          languageCode: lang);
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.only(top: 4),
+                                  child: Icon(Icons.volume_up_outlined,
+                                      size: 16, color: AppColors.primary),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -235,77 +271,66 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
               ),
             ),
 
-            if (isStreaming)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
-                child: AppLoadingIndicator(message: 'Gemini AI is analyzing government schemes...'),
+            if (chatState.isStreaming)
+              const AppLoadingIndicator(
+                  message: 'Checking official scheme information...'),
+            if (chatState.errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(chatState.errorMessage!,
+                    style: const TextStyle(color: AppColors.error)),
               ),
 
-            // Input Dock Bar
-            Container(
-              padding: const EdgeInsets.all(12.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: Colors.grey.shade200)),
-              ),
+            // Input row with microphone
+            Padding(
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: Icon(
-                      voiceState == VoiceState.listening ? Icons.mic_rounded : Icons.mic_none_rounded,
-                      color: voiceState == VoiceState.listening ? Colors.red : AppColors.primary,
+                  // Mic button
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: voiceState.state == VoiceState.listening
+                          ? Colors.red.shade50
+                          : theme.colorScheme.surfaceContainerHighest,
                     ),
-                    onPressed: () {
-                      if (voiceState == VoiceState.listening) {
-                        ref.read(voiceStateProvider.notifier).stopListening();
-                      } else {
-                        ref.read(voiceStateProvider.notifier).startListening();
-                      }
-                    },
+                    child: IconButton(
+                      icon: Icon(
+                        voiceState.state == VoiceState.listening
+                            ? Icons.mic_rounded
+                            : Icons.mic_none_rounded,
+                        color: voiceState.state == VoiceState.listening
+                            ? Colors.red
+                            : AppColors.primary,
+                      ),
+                      onPressed: voiceState.state == VoiceState.listening
+                          ? () => ref
+                              .read(voiceServiceProvider.notifier)
+                              .stopListening()
+                          : _startVoiceInput,
+                      tooltip: 'Voice input',
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Ask in Marathi, Hindi, English...',
-                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13.0),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      ),
-                      onSubmitted: (_) => _sendMessage(),
+                      controller: _controller,
+                      onSubmitted: _send,
+                      decoration: const InputDecoration(
+                          hintText: 'Ask a scheme question...'),
                     ),
                   ),
-                  FloatingActionButton.small(
-                    onPressed: _sendMessage,
-                    backgroundColor: AppColors.primary,
-                    child: const Icon(Icons.send_rounded, color: Colors.white, size: 18.0),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.send_rounded,
+                        color: AppColors.primary),
+                    onPressed: _send,
                   ),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChip(String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: AppColors.primaryContainer,
-          borderRadius: BorderRadius.circular(20.0),
-          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-        ),
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12.0,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryDark,
-          ),
         ),
       ),
     );

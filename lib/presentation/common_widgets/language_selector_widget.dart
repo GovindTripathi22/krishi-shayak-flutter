@@ -5,38 +5,42 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/localization/app_localizations_provider.dart';
+import '../../core/services/voice/voice_service.dart';
 
 class LanguageOption {
   final String code;
   final String englishName;
   final String nativeName;
+  final String flag;
 
   const LanguageOption({
     required this.code,
     required this.englishName,
     required this.nativeName,
+    this.flag = '🇮🇳',
   });
 }
 
-/// Reusable Language Selector Component for 7 Regional Languages
+/// Reusable Language Selector Widget — 7 Regional Languages, Fully Persisted
 class LanguageSelectorWidget extends ConsumerWidget {
   const LanguageSelectorWidget({super.key});
 
   static const List<LanguageOption> supportedLanguages = [
-    LanguageOption(code: 'en', englishName: 'English', nativeName: 'English'),
-    LanguageOption(code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी'),
-    LanguageOption(code: 'mr', englishName: 'Marathi', nativeName: 'मराठी'),
-    LanguageOption(code: 'gu', englishName: 'Gujarati', nativeName: 'ગુજરાતી'),
-    LanguageOption(code: 'ta', englishName: 'Tamil', nativeName: 'தமிழ்'),
-    LanguageOption(code: 'te', englishName: 'Telugu', nativeName: 'తెలుగు'),
-    LanguageOption(code: 'kn', englishName: 'Kannada', nativeName: 'ಕನ್ನಡ'),
+    LanguageOption(code: 'en', englishName: 'English', nativeName: 'English', flag: '🇬🇧'),
+    LanguageOption(code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳'),
+    LanguageOption(code: 'mr', englishName: 'Marathi', nativeName: 'मराठी', flag: '🇮🇳'),
+    LanguageOption(code: 'gu', englishName: 'Gujarati', nativeName: 'ગુજરાતી', flag: '🇮🇳'),
+    LanguageOption(code: 'ta', englishName: 'Tamil', nativeName: 'தமிழ்', flag: '🇮🇳'),
+    LanguageOption(code: 'te', englishName: 'Telugu', nativeName: 'తెలుగు', flag: '🇮🇳'),
+    LanguageOption(code: 'kn', englishName: 'Kannada', nativeName: 'ಕನ್ನಡ', flag: '🇮🇳'),
   ];
 
   static void showLanguageModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppConstants.radiusLarge)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppConstants.radiusLarge)),
       ),
       builder: (ctx) => const LanguageSelectorWidget(),
     );
@@ -59,9 +63,8 @@ class LanguageSelectorWidget extends ConsumerWidget {
             children: [
               Text(
                 loc.selectLanguage,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: theme.textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -69,7 +72,13 @@ class LanguageSelectorWidget extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 8),
+          Text(
+            'Language persists after restart. AI responses will be translated.',
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: 16),
           Flexible(
             child: ListView.separated(
               shrinkWrap: true,
@@ -80,38 +89,51 @@ class LanguageSelectorWidget extends ConsumerWidget {
                 final isSelected = currentLocale.languageCode == lang.code;
 
                 return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 4.0),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                    borderRadius:
+                        BorderRadius.circular(AppConstants.radiusSmall),
                   ),
-                  tileColor: isSelected ? AppColors.primaryContainer.withOpacity(0.4) : null,
+                  tileColor: isSelected
+                      ? AppColors.primaryContainer.withOpacity(0.4)
+                      : null,
                   leading: CircleAvatar(
-                    backgroundColor: isSelected ? AppColors.primary : AppColors.surfaceVariantLight,
+                    backgroundColor:
+                        isSelected ? AppColors.primary : AppColors.surfaceVariantLight,
                     child: Text(
-                      lang.code.toUpperCase(),
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : AppColors.onBackgroundLight,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.0,
-                      ),
+                      lang.flag,
+                      style: const TextStyle(fontSize: 18),
                     ),
                   ),
                   title: Text(
                     lang.nativeName,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                   subtitle: Text(
                     lang.englishName,
-                    style: theme.textTheme.bodySmall?.copyWith(color: AppColors.outlineLight),
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: AppColors.outlineLight),
                   ),
                   trailing: isSelected
-                      ? const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 28.0)
+                      ? const Icon(Icons.check_circle_rounded,
+                          color: AppColors.primary, size: 28.0)
                       : null,
-                  onTap: () {
-                    ref.read(localeProvider.notifier).setLanguageCode(lang.code);
-                    Navigator.of(context).pop();
+                  onTap: () async {
+                    // Update locale (UI strings)
+                    await ref
+                        .read(localeProvider.notifier)
+                        .setLanguageCode(lang.code);
+
+                    // Update TTS language for voice service
+                    ref
+                        .read(voiceServiceProvider.notifier)
+                        .updateLanguage(lang.code);
+
+                    if (context.mounted) Navigator.of(context).pop();
                   },
                 );
               },
