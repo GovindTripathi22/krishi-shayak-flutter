@@ -1,7 +1,7 @@
 {
   "name": "krishisahayak-backend",
   "version": "1.0.0",
-  "description": "Production-ready Node.js, Express.js & MongoDB Atlas backend foundation for KrishiSahayak",
+  "description": "Production-ready Node.js, Express.js & MongoDB Atlas backend for KrishiSahayak",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -20,6 +20,7 @@
   "author": "KrishiSahayak Architecture Team",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

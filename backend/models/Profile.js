@@ -14,6 +14,21 @@ const ProfileSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other'],
+      default: 'Male',
+    },
+    age: {
+      type: Number,
+      min: 18,
+      max: 120,
+    },
+    category: {
+      type: String,
+      enum: ['Small Farmer', 'Marginal Farmer', 'Large Farmer', 'Tenant Farmer'],
+      default: 'Small Farmer',
+    },
     state: {
       type: String,
       required: true,
@@ -24,32 +39,41 @@ const ProfileSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    taluka: {
+    village: {
       type: String,
       trim: true,
     },
-    landSizeAcres: {
-      type: Number,
-      required: true,
-      min: 0,
+    preferredLanguage: {
+      type: String,
+      default: 'en',
     },
-    primaryCrops: [
+    cropType: [
       {
         type: String,
         trim: true,
       },
     ],
-    farmerCategory: {
-      type: String,
-      enum: ['Small Farmer', 'Marginal Farmer', 'Large Farmer', 'Tenant Farmer'],
-      default: 'Small Farmer',
+    landSize: {
+      type: Number,
+      required: true,
+      min: 0,
     },
     annualIncome: {
       type: Number,
+      min: 0,
     },
-    preferredLanguage: {
+    farmerType: {
       type: String,
-      default: 'en',
+      enum: ['Owner', 'Tenant', 'Sharecropper'],
+      default: 'Owner',
+    },
+    irrigationType: {
+      type: String,
+      enum: ['Drip', 'Sprinkler', 'Rainfed', 'Canal', 'Borewell'],
+      default: 'Rainfed',
+    },
+    profileImage: {
+      type: String,
     },
   },
   {
