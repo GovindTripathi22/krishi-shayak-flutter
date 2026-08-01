@@ -8,6 +8,7 @@ import '../../domain/entities/recommendation_entity.dart';
 import '../../domain/entities/weather_entity.dart';
 import '../../domain/repositories/government_scheme_repository.dart';
 import '../../domain/repositories/recommendation_repository.dart';
+import 'auth_controller_provider.dart';
 // Dynamic Time-of-Day Greeting
 final timeGreetingProvider = Provider<String>((ref) {
   final hour = DateTime.now().hour;

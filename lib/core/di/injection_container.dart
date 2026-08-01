@@ -56,7 +56,7 @@ Future<void> initDependencyInjection() async {
   sl.registerLazySingleton<SchemeLocalDataSource>(() => SchemeLocalDataSourceImpl());
 
   // Repositories
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
   sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(firestoreService: sl()));
   
   sl.registerLazySingleton<GovernmentSchemeRepository>(() => GovernmentSchemeRepositoryImpl(
